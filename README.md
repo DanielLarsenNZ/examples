@@ -1,2 +1,3 @@
-# examples
-Quick and dirty examples for Azure and .NET
+# Examples
+
+Quick examples for Azure and .NET
