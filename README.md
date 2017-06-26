@@ -1,3 +1,3 @@
 # Examples
 
-Quick examples for Azure and .NET
+Quick examples for Azure, PowerShell and .NET.
