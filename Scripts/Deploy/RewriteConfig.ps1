@@ -21,5 +21,6 @@ $appSetting.node.value = $Setting1Value
 $connString = Select-XML -Xml $xml -XPath '//connectionStrings/add[@name="Default"]'
 $connString.node.connectionString = $DefaultConnectionString
 
+# Save as a new file
 $newPath = "$PSScriptRoot\rewritten.app.config"
 $xml.Save($newPath)
