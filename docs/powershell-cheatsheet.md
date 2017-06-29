@@ -1,4 +1,6 @@
-# Dan's PowerShell cheatsheet
+# A PowerShell cheatsheet
+
+By @DanielLarsenNZ
 
 ## Comment-based help
 

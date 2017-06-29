@@ -1,6 +1,7 @@
 <#
     .SYNOPSIS
-    Invoke a Mozilla HTTP Observatory scan and wait for the scan to complete
+    Invoke a Mozilla HTTP Observatory scan and wait for the scan to complete.
+    Throw an error if grade is lower than a "B".
 
     .PARAMETER Hostname
     The Hostname of the website to scan, e.g. 'www.mozilla.org'
