@@ -36,8 +36,7 @@ PowerShell will number them for you when it displays your help text to a user.
 I collect `param` examples.
 
 ```powershell
-# [CmdletBinding()] attribute allows common parameters (-Verbose, -ErrorAction, etc)
-#   to be passed through
+# [CmdletBinding()] attribute allows common parameters (-Verbose, -ErrorAction, etc) to be passed through
 [CmdletBinding()]
 param (
     [string] $OptionalStringParam,
@@ -169,13 +168,12 @@ A case can evaluate an expression.
 
 ```powershell
 switch ($_) {
-    { $_.type -eq 'vms' -and $_.action -eq 'allow' } {
-        "Allow VM SKUs $($_.skus)"
-    }
+    { $_.type -eq 'vms' -and $_.action -eq 'allow' } { "Allow VM SKUs $($_.skus)" }
     default { throw "policy type = ""$($_.type)"" action = ""$($_.action)"" is not supported." }
 }
 ```
 
+You can also do Regex on case matches...
 
 > <https://technet.microsoft.com/en-us/library/ff730937.aspx>
 
