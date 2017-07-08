@@ -31,6 +31,27 @@ PowerShell will number them for you when it displays your help text to a user.
 #>
 ```
 
+## Params
+
+I collect `param` examples.
+
+```powershell
+# [CmdletBinding()] attribute allows common parameters (-Verbose, -ErrorAction, etc)
+#   to be passed through
+[CmdletBinding()]
+param (
+    [string] $OptionalStringParam,
+    [string] $OptionalStringParamWithDefault = 'Default',
+    [Parameter(Mandatory = $true)] [string] $MandatoryStringParam,
+    [Parameter(Mandatory = $true, HelpMessage="Enter a help message here"))] [string] $MandatoryStringParamWithHelpMessage,
+    [ValidateSet('Incremental', 'Complete')] [string] $ValidateSetParam,
+    [ValidateSet('Incremental', 'Complete')] [string] $ValidateSetParamWithDefault = 'Incremental',
+    [switch] $SwitchParam,
+    [string] $DefaultValuesCanBeExpressions = (New-Guid),
+    [string] $DefaultValuesCanBeEnvVars = $ENV:BUILD_ID
+)
+```
+
 ## Strings, Arrays
 
 Create an Array
@@ -130,6 +151,35 @@ In PowerShell 4 there is a ForEach method on a Collection.
 > `break` statement : <http://ss64.com/ps/break.html>
 
 > `ForEach` method: <http://ss64.com/ps/foreach-method.html>
+
+## `switch`
+
+`switch` is _amazing_ in PowerShell.
+
+```powershell
+# Simple switch
+switch ($_.type) {
+    'vm' { "VM SKU = $($_.sku)" }
+    'sqlDb' { "DB tier = $($_.tier)" }
+    default { throw "Type ""$($_.type)"" is not supported" }
+}
+```
+
+A case can evaluate an expression.
+
+```powershell
+switch ($_) {
+    { $_.type -eq 'vms' -and $_.action -eq 'allow' } {
+        "Allow VM SKUs $($_.skus)"
+    }
+    default { throw "policy type = ""$($_.type)"" action = ""$($_.action)"" is not supported." }
+}
+```
+
+
+> <https://technet.microsoft.com/en-us/library/ff730937.aspx>
+
+> <https://msdn.microsoft.com/en-us/powershell/reference/5.1/microsoft.powershell.core/about/about_switch>
 
 ## map
 
