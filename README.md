@@ -12,7 +12,7 @@ Quick examples for Azure, PowerShell and .NET.
   Create a secret for an Azure Active Directory (AAD) Service Principal.
 * [InvokeHttpObservatoryScan.ps1](/Scripts/Test/InvokeHttpObservatoryScan.ps1) -
   Invoke a Mozilla HTTP Observatory scan and wait for the scan to complete. Throw an error if grade is lower than a "B".
-* [InvokeKuduNpmInstall.ps1](/Scripts/Azure/InvokeKuduNpmInstall.ps1) - Invokes
+* [InvokeKuduNpmInstall.ps1](/Scripts/Deploy/InvokeKuduNpmInstall.ps1) - Invokes
   `npm install --production` on an Azure App Service via the Kudu API.
 * [RewriteConfig.ps1](/Scripts/Deploy/RewriteConfig.ps1) - Rewrite XML config
   settings and save as a new file.
