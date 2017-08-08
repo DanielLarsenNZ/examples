@@ -6,7 +6,7 @@ See `Smoke.Tests.ps1` for the tests used in the demo.
 
 ## Intro
 
-Pester is an opensource BDD framework for PowerShell. It's primary use case is _unit
+Pester is an opensource BDD framework for PowerShell. Its primary use case is _unit
 testing PowerShell scripts_, but I find it really useful for _integration tests_, 
 _smoke tests_, _database tests_ and _API tests_.
 
