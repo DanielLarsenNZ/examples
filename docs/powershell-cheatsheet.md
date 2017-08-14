@@ -190,6 +190,16 @@ $filenames = $files | % { $_.FullName }
 
 > Select / map PowerShell: <http://stackoverflow.com/a/8909031>
 
+## Ternary operator / conditional expression / inline if / `iif`
+
+There is no ternary operator in the traditional sense. However, there is an elegant
+conditional expression syntax that can be used inline with setting a variable (and
+many other operations):
+
+```powershell
+$rg = if ($Prod) { 'scaffold-prod-rg' } else { 'scaffold-nonprod-rg' }
+```
+
 ## JSON
 
 Here is a cool way to generate JSON objects (thanks petern!). First create the object 
