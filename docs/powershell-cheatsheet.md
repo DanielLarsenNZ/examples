@@ -47,11 +47,31 @@ param (
     [ValidateSet('Incremental', 'Complete')] [string] $ValidateSetParamWithDefault = 'Incremental',
     [switch] $SwitchParam,
     [string] $DefaultValuesCanBeExpressions = (New-Guid),
-    [string] $DefaultValuesCanBeEnvVars = $ENV:BUILD_ID
+    [string] $DefaultValuesCanBeEnvVars = $ENV:BUILD_ID,
+    [ValidatePattern('^https?://')] [string] $ValidatePatternsAreCool,
+    [ValidateScript({ Test-Path -PathType Leaf -Path $_ })] $ValidateScriptsAreBananas
 )
 ```
 
-## Strings, Arrays
+## Strings
+
+`Split-Path` is handy.
+
+```powershell
+# Get the folder from a path
+$path = 'C:\r\examples'
+$folderName = Split-Path $path -Leaf #> 'examples'
+
+# Get the path from a path+filename
+$filePath = 'C:\r\examples\README.md'
+$folderName = Split-Path $filePath #> 'C:\r\examples'
+
+# Get the filename from a path+filename
+$filePath = 'C:\r\examples\README.md'
+$folderName = Split-Path $filePath -Leaf #> 'README.md'
+```
+
+## Arrays
 
 Create an Array
 
@@ -199,6 +219,35 @@ many other operations):
 ```powershell
 $rg = if ($Prod) { 'scaffold-prod-rg' } else { 'scaffold-nonprod-rg' }
 ```
+
+## Custom objects
+
+Add behaviour (methods) to custom objects:
+
+```powershell
+# Mock proxy.ListChildren (!)
+$mockProxy = New-Object -TypeName PSObject
+$mockProxy | Add-Member -Name ListChildren -MemberType ScriptMethod `
+    -Value { return @( @{ Name = 'Report1'; TypeName = 'Folder' } ) }
+```
+
+> <https://stackoverflow.com/a/14836102>
+
+As of PowerShell 5 you can use a PowerShell `class` to create objects in a similar
+way as in C#: <https://trevorsullivan.net/2014/10/25/implementing-a-net-class-in-powershell-v5/>
+
+## .NET interop
+
+Wrap a call to a .NET object in a `try` `catch` block to force Exceptions to terminate
+(if that is the behaviour you want).
+
+```powershell
+try { $items = $proxy.ListChildren($folder, $False) } catch { throw }
+```
+
+`$items` will still be in scope even if instantiated inside the `try` block :\
+
+> <https://stackoverflow.com/questions/17847276/is-an-exception-from-a-net-method-a-terminating-or-not-terminating-error>
 
 ## JSON
 
