@@ -9,7 +9,7 @@
             {
                 "not": {
                     "field": "name",
-                    "in": ["internal-vnet", "external-vnet", "management-vnet"]
+                    "in": ["example-prod-aue-vnet", "example-prod-ase-vnet"]
                 }
             }
         ]

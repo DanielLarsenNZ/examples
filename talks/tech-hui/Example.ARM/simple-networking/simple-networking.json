@@ -24,14 +24,14 @@
     }
   },
   "variables": {
-    "vnetPrefix": "10.12.0.0/16",
+    "vnetPrefix": "10.10.0.0/16",
 
     "externalSubnetName": "[parameters('externalSubnetName')]",
-    "externalSubnetPrefix": "10.12.100.0/24",
+    "externalSubnetPrefix": "10.10.0.0/20",
     "externalNsgName": "[parameters('externalNsgName')]",
 
     "internalSubnetName": "[parameters('internalSubnetName')]",
-    "internalSubnetPrefix": "10.12.20.0/24",
+    "internalSubnetPrefix": "10.10.16.0/20",
     "internalNsgName": "[parameters('internalNsgName')]"
   },
   "resources": [
@@ -132,9 +132,35 @@
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "Internet",
               "access": "Allow",
-              "priority": 105,
+              "priority": 100,
               "direction": "Outbound",
               "description": "HTTPS outbound is required for Azure SaaS services including OMS, VSTS."
+            }
+          },
+          {
+            "name": "deny-internet-any-in",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "Internet",
+              "destinationAddressPrefix": "*",
+              "access": "Deny",
+              "priority": 1000,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "deny-internet-any-out",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "Internet",
+              "access": "Deny",
+              "priority": 1000,
+              "direction": "Outbound"
             }
           }
         ]
@@ -161,7 +187,7 @@
               "sourceAddressPrefix": "Internet",
               "destinationAddressPrefix": "*",
               "access": "Deny",
-              "priority": 2000,
+              "priority": 1000,
               "direction": "Inbound"
             }
           },
@@ -174,7 +200,7 @@
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "Internet",
               "access": "Deny",
-              "priority": 2000,
+              "priority": 1000,
               "direction": "Outbound"
             }
           }
