@@ -192,6 +192,19 @@
             }
           },
           {
+            "name": "allow-sqldw01-sql-out",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "118.149.106.109",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Outbound"
+            }
+          },
+          {
             "name": "deny-internet-any-out",
             "properties": {
               "protocol": "*",
