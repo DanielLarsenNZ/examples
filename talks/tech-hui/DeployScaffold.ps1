@@ -46,7 +46,7 @@ New-AzureRmRoleAssignment -ObjectId $sysopsGroupObjectId -RoleDefinitionName own
 Write-Verbose "Creating ARM Policy Definition..."
 $definition = New-AzureRmPolicyDefinition -Name AllowedVNetPolicy -DisplayName 'Allowed VNets' `
                                           -Description 'Only allow scaffold VNets.' `
-                                          -Policy .\DenyNonScaffoldVnet.json
+                                          -Policy "$PSScriptRoot\DenyNonScaffoldVnet.json"
 
 # Derive the scope = "/subscriptions/(subscriptionId)/resourceGroups/(resourceGroup)"
 $subscription = (Get-AzureRmContext).Subscription
@@ -66,7 +66,7 @@ New-AzureRmPolicyAssignment -Name OnlyConnectVMsToScaffoldVNets -DisplayName 'VM
 
 Write-Verbose "Deploying Networking to networking-prod-rg..."
 
-.\Example.ARM\Deploy-AzureResourceGroup.ps1 `
+. "$PSScriptRoot\Example.ARM\Deploy-AzureResourceGroup.ps1" `
     -ResourceGroupLocation australiaeast -ResourceGroupName networking-prod-rg `
     -TemplateFile .\simple-networking\simple-networking.json `
     -TemplateParametersFile .\simple-networking\simple-networking-parameters.json `
