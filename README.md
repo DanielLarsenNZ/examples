@@ -2,6 +2,10 @@
 
 Quick examples for Azure, PowerShell and .NET.
 
+## Talks
+
+* **Tech.Hui** talk on Azure Scaffold: Scripts and ARM template examples: [talks/tech-hui](./talks/tech-hui)
+
 ## docs
 
 * [powershell-cheatsheet.md](./docs/powershell-cheatsheet.md) - A PowerShell cheatsheet.
