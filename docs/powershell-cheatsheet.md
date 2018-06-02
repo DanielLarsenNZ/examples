@@ -293,6 +293,18 @@ Output:
 Write-Output  $xml.configuration.appSettings.add | Where-Object -FilterScript { $_.key -eq 'Setting1' }
 ```
 
+## Call RMDIR from PowerShell to delete `node_modules`
+
+Deleting npm `node_modules` directories on Windows can be a pain due to the [260 character MAX_PATH limitation]. The DOS RMDIR command handles long paths _slightly_ better. You can invoke RMDIR from PowerShell like this:
+
+```powershell
+& cmd /c rmdir node_modules /s /q
+```
+
+> Tip: You can fix this problem once and for all in Windows 10 by setting `HKLM\SYSTEM\CurrentControlSet\Control\FileSystem\LongPathsEnabled`
+
+[260 character MAX_PATH limitation]:https://msdn.microsoft.com/en-us/library/aa365247%28VS.85%29.aspx?f=255&MSPPError=-2147217396#maxpath
+
 ## Invoke MSBUILD, SQLPackage, etc
 
 This is tricky in PowerShell if you have dynamic arguments, but a nice workaround
