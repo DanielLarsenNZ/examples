@@ -9,6 +9,7 @@ Quick examples for Azure, PowerShell and .NET.
 ## docs
 
 * [powershell-cheatsheet.md](./docs/powershell-cheatsheet.md) - A PowerShell cheatsheet.
+* [Verify Azure Functions host in Loader.io](./docs\verify-loader-azure-functions.md)
 
 ## Scripts
 
