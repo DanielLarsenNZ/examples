@@ -24,8 +24,8 @@ Azure Functions proxies are pretty handy - you can rewrite request URLs and even
 }
 ```
 
-This proxy, named `loader` is configured for any GET request to `/loaderio-f13b281951404283979f7a0050f04c00`. A _response override_ is configured to respond to with a plain-text response of "loaderio-f13b281951404283979f7a0050f04c00". In this scenario I don't even need to back it with a Function. This is all Loader.io needs to verify the Functions host.
+This proxy, named `loader`, is configured for any GET request to `/loaderio-f13b281951404283979f7a0050f04c00`. A _response override_ is configured to respond with a plain-text response of "loaderio-f13b281951404283979f7a0050f04c00". In this scenario I don't even need to back it with a Function. This is all Loader.io needs to verify the Functions host.
 
-I guess I could also host other static assets like favico in this manner. Pretty sweet!
+I guess I could also host other small static assets like favico in this manner. Pretty sweet!
 
 Read about Azure Function Proxies, response overrides and more here: <https://docs.microsoft.com/en-us/azure/azure-functions/functions-proxies#responseOverrides>
