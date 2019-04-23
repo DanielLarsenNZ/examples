@@ -121,6 +121,39 @@ $a.AddRange(("four", "five", "six"))
 
 > Get-ChildItem in PowerShell: <http://www.kanasolution.com/2010/12/get-childitem-in-powershell/>
 
+## for
+
+Simple.
+
+```powershell
+for ($i = 0; $i -lt 10; $i++) 
+{
+    "$i"
+}
+```
+
+Multiple counter variables and repeat statements!
+
+```powershell
+for (($i = 0), ($j = 0); $i -lt 10; ($i++), ($j++))
+{
+    "`$i:$i"
+    "`$j:$j"
+}
+```
+
+Multiple conditions.
+
+```powershell
+for (($i = 0), ($j = 0); $i -lt 10 -and $j -lt 10; ($i++), ($j++))
+{
+    "`$i:$i"
+    "`$j:$j"
+}
+```
+
+> 📖 https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_for?view=powershell-6
+
 ## foreach
 
 Some traps for young players here... `ForEach-Object` and `foreach()` are different.
@@ -171,6 +204,29 @@ In PowerShell 4 there is a ForEach method on a Collection.
 
 > `ForEach` method: <http://ss64.com/ps/foreach-method.html>
 
+## ForEach parallel
+
+You can for-each parallel inside a `workflow`. There are [other ways too].
+
+```powershell
+workflow TestEndpoints {
+    param (
+        [string] $BaseUrl
+    )
+    
+    ForEach -Parallel ($path in ("/health", "/parts", "/orders", "/dispatches", "/users")) {  
+        $response = Invoke-WebRequest -Method Get -Uri "$($BaseUrl)$($path)" -UseBasicParsing
+        $body = ConvertFrom-Json $response.Content
+        
+        Write-Output "GET $($path): HTTP Status = $($response.StatusCode), version = $($body.version)"
+    }
+}
+
+TestEndpoints -BaseUrl 'http://localtest.me/api/'
+```
+
+> 📖 https://docs.microsoft.com/en-us/powershell/module/psworkflow/about/about_foreach-parallel?view=powershell-5.1
+
 ## `switch`
 
 `switch` is _amazing_ in PowerShell.
@@ -218,6 +274,15 @@ many other operations):
 
 ```powershell
 $rg = if ($Prod) { 'scaffold-prod-rg' } else { 'scaffold-nonprod-rg' }
+```
+
+## Get-Random
+
+Best named cmdlet ever!
+
+```powershell
+# Generate a random number between 0 - 255
+Get-Random --Maximum 255
 ```
 
 ## Custom objects
@@ -381,3 +446,6 @@ Copy-Item -FromSession $session -Path c:\logs\u_ex170406.log -Destination C:\Tem
 > and some tips for Windows Server 2016 Nano: <http://www.hurryupandwait.io/blog/a-packer-template-for-windows-nano-server-weighing-300mb>
 
 > Sending Files Over WinRM: <http://www.tomsitpro.com/articles/powershell-send-files-over-winrm,2-886.html>
+
+
+[other ways too]:https://blogs.technet.microsoft.com/uktechnet/2016/06/20/parallel-processing-with-powershell/
