@@ -447,5 +447,15 @@ Copy-Item -FromSession $session -Path c:\logs\u_ex170406.log -Destination C:\Tem
 
 > Sending Files Over WinRM: <http://www.tomsitpro.com/articles/powershell-send-files-over-winrm,2-886.html>
 
+## Other tricks
+
+Open a new Powershell Console Window from Powershell
+
+```powershell
+start powershell
+
+# start in a particular folder
+start powershell -WorkingDirectory c:\r
+```
 
 [other ways too]:https://blogs.technet.microsoft.com/uktechnet/2016/06/20/parallel-processing-with-powershell/
