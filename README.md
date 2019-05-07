@@ -21,6 +21,7 @@ Quick examples for Azure, PowerShell and .NET.
   `npm install --production` on an Azure App Service via the Kudu API.
 * [RewriteConfig.ps1](/Scripts/Deploy/RewriteConfig.ps1) - Rewrite XML config
   settings and save as a new file.
+* [deploy-config-apim.ps1](Scripts\Azure\deploy-config-apim.ps1) - Deploy Azure API Management
 
 ## Solutions
 
