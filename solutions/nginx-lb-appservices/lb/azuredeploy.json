@@ -1,0 +1,82 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "siteName": {
+        "type": "string",
+        "metadata": {
+          "description": "Name of Azure Web App"
+        }
+      },
+      "hostingPlanName": {
+        "type": "string",
+        "metadata": {
+          "description": "Name of App Service Plan"
+        }
+      },
+      "hostingSkuTier": {
+        "type": "string",
+        "defaultValue": "Basic",
+        "metadata": {
+          "description": "App Service Plan Tier, e.g. 'Basic'"
+        }
+      },
+      "hostingSkuName": {
+        "type": "string",
+        "defaultValue": "B2",
+        "metadata": {
+          "description": "App Service Plan SKU, e.g. 'B2'"
+        }
+      },
+      "containerImageName": {
+        "type": "string",
+        "metadata": {
+          "description": "Container name including registry, e.g. `hellotm.azurecr.io/nginx-lb-hellotm:latest`"
+        }
+      }
+    },
+    "variables": {
+    },
+    "resources": [
+      {
+        "type": "Microsoft.Web/sites",
+        "name": "[parameters('siteName')]",
+        "dependsOn": [
+          "[parameters('hostingPlanName')]"
+        ],
+        "tags": {
+          "displayName": "Web App"
+        },
+        "properties": {
+          "siteConfig": {
+            "linuxFxVersion": "[concat('DOCKER|', parameters('containerImageName'))]",
+            "appSettings": [
+            ]
+          },
+          "name": "[parameters('siteName')]",
+          "serverFarmId": "[parameters('hostingPlanName')]",
+          "hostingEnvironment": ""
+        },
+        "apiVersion": "2016-08-01",
+        "location": "[resourceGroup().location]"
+      },
+      {
+        "apiVersion": "2016-09-01",
+        "name": "[parameters('hostingPlanName')]",
+        "type": "Microsoft.Web/serverfarms",
+        "location": "[resourceGroup().location]",
+        "properties": {
+          "name": "[parameters('hostingPlanName')]",
+          "reserved": true
+        },
+        "sku": {
+          "Tier": "[parameters('hostingSkuTier')]",
+          "Name": "[parameters('hostingSkuName')]"
+        },
+        "kind": "linux",
+        "tags": {
+          "displayName": "App Service Plan"
+        }
+      }
+    ]
+  }

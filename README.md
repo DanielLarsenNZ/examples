@@ -22,4 +22,8 @@ Quick examples for Azure, PowerShell and .NET.
 * [RewriteConfig.ps1](/Scripts/Deploy/RewriteConfig.ps1) - Rewrite XML config
   settings and save as a new file.
 
+## Solutions
+
+* Load balance two (or more) App Services with nginx running in a Linux App Service container: [nginx-lb-appservices](./nginx-lb-appservices)
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](/LICENSE)
