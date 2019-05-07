@@ -24,6 +24,6 @@ Quick examples for Azure, PowerShell and .NET.
 
 ## Solutions
 
-* Load balance two (or more) App Services with nginx running in a Linux App Service container: [nginx-lb-appservices](./nginx-lb-appservices)
+* [soltuions/nginx-lb-appservices](./solutions/nginx-lb-appservices) - Load balance two (or more) App Services with nginx running in a Linux App Service container
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](/LICENSE)
