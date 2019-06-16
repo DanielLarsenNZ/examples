@@ -2,10 +2,6 @@
 
 Quick examples for Azure, PowerShell and .NET.
 
-## Talks
-
-* **Tech.Hui** talk on Azure Scaffold: Scripts and ARM template examples: [talks/tech-hui](./talks/tech-hui)
-
 ## docs
 
 * [powershell-cheatsheet.md](./docs/powershell-cheatsheet.md) - A PowerShell cheatsheet.
@@ -26,5 +22,9 @@ Quick examples for Azure, PowerShell and .NET.
 ## Solutions
 
 * [soltuions/nginx-lb-appservices](./solutions/nginx-lb-appservices) - Load balance two (or more) App Services with nginx running in a Linux App Service container
+
+## Talks
+
+> Talks have moved to <https://github.com/DanielLarsenNZ/talks>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](/LICENSE)
