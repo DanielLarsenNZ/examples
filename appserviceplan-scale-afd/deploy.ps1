@@ -39,6 +39,8 @@ az network front-door backend-pool backend add -g $rg `
     --address "$app2.azurewebsites.net" `
     --pool-name 'DefaultBackendPool'
 
+#TODO: https://docs.microsoft.com/en-us/azure/frontdoor/front-door-custom-domain
+
 # Open the apps in the browser
 start "https://$app1.azurewebsites.net"
 start "https://$app2.azurewebsites.net"
