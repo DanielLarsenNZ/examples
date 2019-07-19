@@ -9,7 +9,9 @@ $tags = 'project=appserviceplan-scale-afd'
 $app1 = "appserviceplanscale1-$loc"
 $app2 = "appserviceplanscale2-$loc"
 $frontDoor = 'appserviceplanscale'
+$insights = 'appserviceplanscale-insights'
 $customDomain = ''  # FQDN, e.g. 'www.foobar.com'
+$loaderioKey = ''   # loader.io load testing validation key
 
 # Create resource group
 az group create -n $rg --location $location --tags $tags
@@ -28,8 +30,23 @@ az webapp create -n $app2 --plan $plan2 -g $rg --tags $tags `
 az webapp update -n $app1 -g $rg --client-affinity-enabled false
 az webapp update -n $app2 -g $rg --client-affinity-enabled false
 
+# Application Insights
+az extension add -n application-insights
+
+#  https://docs.microsoft.com/en-us/cli/azure/ext/application-insights/monitor/app-insights/component?view=azure-cli-latest#code-try-1
+$instrumentationKey = ( az monitor app-insights component create --app $insights --location $location --kind web -g $rg --application-type web --tags $tags | ConvertFrom-Json ).instrumentationKey
+az webapp config appsettings set -n $app1 -g $rg --settings "APPINSIGHTS_INSTRUMENTATIONKEY=$instrumentationKey"
+az webapp config appsettings set -n $app2 -g $rg --settings "APPINSIGHTS_INSTRUMENTATIONKEY=$instrumentationKey"
+
+
+if ($loaderioKey -ne '') {
+    # Set Loader.io validation key as App Setting
+    az webapp config appsettings set -n $app1 -g $rg --settings "loader.io=$loaderioKey"
+    az webapp config appsettings set -n $app2 -g $rg --settings "loader.io=$loaderioKey"
+}
+
 # Create Front Door
-az extension add --name front-door
+az extension add -n front-door
 
 #  https://docs.microsoft.com/en-us/cli/azure/ext/front-door/network/front-door?view=azure-cli-latest#ext-front-door-az-network-front-door-create
 az network front-door create -n $frontDoor -g $rg --tags $tags `
