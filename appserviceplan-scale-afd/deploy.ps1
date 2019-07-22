@@ -30,14 +30,14 @@ az webapp create -n $app2 --plan $plan2 -g $rg --tags $tags `
 az webapp update -n $app1 -g $rg --client-affinity-enabled false
 az webapp update -n $app2 -g $rg --client-affinity-enabled false
 
-# Application Insights
+# Create an Application Insights instance and set the Instrumentation Key on both plans
 az extension add -n application-insights
 
-#  https://docs.microsoft.com/en-us/cli/azure/ext/application-insights/monitor/app-insights/component?view=azure-cli-latest#code-try-1
-$instrumentationKey = ( az monitor app-insights component create --app $insights --location $location --kind web -g $rg --application-type web --tags $tags | ConvertFrom-Json ).instrumentationKey
+#  https://docs.microsoft.com/en-us/cli/azure/ext/application-insights/monitor/app-insights/component?view=azure-cli-latest
+$instrumentationKey = ( az monitor app-insights component create --app $insights --location $location -g $rg --tags $tags | ConvertFrom-Json ).instrumentationKey
+#  https://docs.microsoft.com/en-us/cli/azure/webapp/config/appsettings?view=azure-cli-latest#az-webapp-config-appsettings-set
 az webapp config appsettings set -n $app1 -g $rg --settings "APPINSIGHTS_INSTRUMENTATIONKEY=$instrumentationKey"
 az webapp config appsettings set -n $app2 -g $rg --settings "APPINSIGHTS_INSTRUMENTATIONKEY=$instrumentationKey"
-
 
 if ($loaderioKey -ne '') {
     # Set Loader.io validation key as App Setting
@@ -71,10 +71,17 @@ if ($customDomain -ne '') {
     #  https://docs.microsoft.com/en-us/cli/azure/ext/front-door/network/front-door/routing-rule?view=azure-cli-latest#ext-front-door-az-network-front-door-routing-rule-create
     az network front-door routing-rule create --front-door-name $frontDoor -g $rg -n 'DefaultRoutingRule' --frontend-endpoints 'DefaultFrontendEndpoint' 'CustomDomainFrontendEndpoint' --route-type Forward --accepted-protocols Http Https --backend-pool 'DefaultBackendPool' --caching Disabled --disabled false --forwarding-protocol HttpOnly
 
+    # Warning: This command did not work when I tried it (used Portal instead). Was in preview as at 19/7/2019
+    # https://docs.microsoft.com/en-us/azure/frontdoor/front-door-custom-domain-https#ssl-certificates
+    # https://docs.microsoft.com/en-us/cli/azure/ext/front-door/network/front-door/frontend-endpoint?view=azure-cli-latest#ext-front-door-az-network-front-door-frontend-endpoint-enable-https
     az network front-door frontend-endpoint enable-https --front-door-name $frontDoor -g $rg -n 'DefaultRoutingRule' --certificate-source FrontDoor
 
     start "https://$customDomain"
 }
+
+#TODO: Set latency sensitivity to high value (1000ms) to round-robin across two ASPs in same region. 
+#   https://docs.microsoft.com/en-us/azure/frontdoor/front-door-backend-pool
+#   https://docs.microsoft.com/en-us/azure/frontdoor/front-door-routing-methods#weighted-traffic-routing-method
 
 # Open the apps in the browser
 start "https://$app1.azurewebsites.net"

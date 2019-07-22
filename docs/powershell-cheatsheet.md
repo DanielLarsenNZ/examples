@@ -349,6 +349,13 @@ Output:
 }
 ```
 
+Take the JSON result of an `az` CLI command, convert to a PowerShell object and assign the value of a property to a variable:
+
+```powershell
+$instrumentationKey = ( az monitor app-insights component create --app 'myapp-insights' `
+    --location $location --resource-group $rg | ConvertFrom-Json ).instrumentationKey
+```
+
 ## XML
 
 ### Load, parse and read an XML document
