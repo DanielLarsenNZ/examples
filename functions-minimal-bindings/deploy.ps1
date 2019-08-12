@@ -20,6 +20,7 @@ az group create -n $rg --location $location --tags $tags
 az appservice plan create -n $plan -g $rg --location $location --sku $planSku --number-of-workers 1 --tags $tags
 
 # Create Storage Account
+# https://docs.microsoft.com/en-us/cli/azure/storage/account?view=azure-cli-latest#az-storage-account-create
 az storage account create -n $storage -g $rg -l $location --tags $tags --sku Standard_LRS
 
 # Create an Application Insights instance and get the instrumentation key
@@ -29,6 +30,7 @@ az extension add -n application-insights
 $instrumentationKey = ( az monitor app-insights component create --app $insights --location $location -g $rg --tags $tags | ConvertFrom-Json ).instrumentationKey
 
 # Create Function
+# https://docs.microsoft.com/en-us/cli/azure/functionapp?view=azure-cli-latest
 az functionapp create -g $rg --tags $tags -p $plan -n $function -s $storage -p $plan --os-type Windows --runtime dotnet --app-insights $insights --app-insights-key $instrumentationKey
 
 # Package and zip the app
@@ -39,6 +41,7 @@ Compress-Archive -Path ./_zip/* -DestinationPath ./deploy.zip -Force
 az functionapp deployment source config-zip -g $rg -n $function --src ./deploy.zip
 
 # Create Event Hub and namespace and get the key
+# https://docs.microsoft.com/en-us/cli/azure/eventhubs?view=azure-cli-latest
 az eventhubs namespace create -g $rg --name $eventhubNamespace --location $location --tags $tags --sku Basic
 az eventhubs eventhub create -g $rg --namespace-name $eventhubNamespace --name 'transactions' --message-retention 1 --partition-count 2
 
