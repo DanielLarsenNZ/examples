@@ -8,7 +8,8 @@ $tags = 'project=functions-minimal-bindings'
 $plan = "functionsminbind-$loc-plan"
 $planSku = 'B1'
 $function = "functionsminbind-$loc"
-$storage = "functionsminbind$loc"
+$servicesStorage = "funminbindsvcs$loc"
+$dataStorage = "funminbinddata$loc"
 $container = 'data'
 $insights = 'functionsminbind-insights'
 $eventhubNamespace = 'functionsminbind-hub'
@@ -19,9 +20,14 @@ az group create -n $rg --location $location --tags $tags
 # Create App Service Plan
 az appservice plan create -n $plan -g $rg --location $location --sku $planSku --number-of-workers 1 --tags $tags
 
-# Create Storage Account
+# Create Storage Accounts
 # https://docs.microsoft.com/en-us/cli/azure/storage/account?view=azure-cli-latest#az-storage-account-create
-az storage account create -n $storage -g $rg -l $location --tags $tags --sku Standard_LRS
+az storage account create -n $servicesStorage -g $rg -l $location --tags $tags --sku Standard_LRS
+az storage account create -n $dataStorage -g $rg -l $location --tags $tags --sku Standard_LRS
+
+$servicesStorageConnection = ( az storage account show-connection-string -g $rg -n $servicesStorage | ConvertFrom-Json ).connectionString
+$dataStorageConnection = ( az storage account show-connection-string -g $rg -n $dataStorage | ConvertFrom-Json ).connectionString
+
 
 # Create an Application Insights instance and get the instrumentation key
 az extension add -n application-insights
@@ -31,7 +37,7 @@ $instrumentationKey = ( az monitor app-insights component create --app $insights
 
 # Create Function
 # https://docs.microsoft.com/en-us/cli/azure/functionapp?view=azure-cli-latest
-az functionapp create -g $rg --tags $tags -p $plan -n $function -s $storage -p $plan --os-type Windows --runtime dotnet --app-insights $insights --app-insights-key $instrumentationKey
+az functionapp create -g $rg --tags $tags -p $plan -n $function -s $servicesStorage -p $plan --os-type Windows --runtime dotnet --app-insights $insights --app-insights-key $instrumentationKey
 
 # Package and zip the app
 dotnet publish .\Examples.Minimal.Functions\ --configuration Release -o ../_zip
@@ -48,7 +54,9 @@ az eventhubs eventhub create -g $rg --namespace-name $eventhubNamespace --name '
 # Don't use RootManageSharedAccessKey in Production
 $eventHubConnectionString = ( az eventhubs namespace authorization-rule keys list -g $rg --namespace-name $eventhubNamespace --name 'RootManageSharedAccessKey' | ConvertFrom-Json ).primaryConnectionString
 
-# Set event hubs connection string in a Function App Setting
+# Set connection strings in a Function App Setting
+az functionapp config appsettings set --name $function -g $rg --settings "ServicesStorageConnectionString=$servicesStorageConnection"
+az functionapp config appsettings set --name $function -g $rg --settings "DataStorageConnectionString=$dataStorageConnection"
 az functionapp config appsettings set --name $function -g $rg --settings "EventHubConnectionString=$eventHubConnectionString"
 
 # Count to 10
@@ -56,8 +64,8 @@ Start-Sleep 10
 
 # Upload a test file
 # https://mockaroo.com/
-az storage container create -n 'data' --account-name $storage --public-access off
-az storage blob upload --account-name $storage -f ./transactions.csv -c $container -n 'transactions.csv'
+az storage container create -n 'data' --account-name $dataStorage --public-access off
+az storage blob upload --account-name $datastorage -f ./transactions.csv -c $container -n 'transactions.csv'
 
 # Tear down
 # az group delete -n $rg --yes

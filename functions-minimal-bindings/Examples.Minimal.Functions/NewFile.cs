@@ -1,4 +1,5 @@
 using Examples.Minimal.Functions.Commands;
+using Examples.Minimal.Functions.Helpers;
 using Microsoft.Azure.EventHubs;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
@@ -14,7 +15,6 @@ namespace Examples.Minimal.Functions
 {
     public static class NewFile
     {
-        private const string EventHubName = "transactions";
         private static IConfiguration _config = null;
         private static ILogger _log = null;
 
@@ -22,10 +22,9 @@ namespace Examples.Minimal.Functions
         private static readonly Lazy<EventHubClient> _lazyClient = new Lazy<EventHubClient>(InitializeEventHubClient);
         private static EventHubClient EventHubClient => _lazyClient.Value;
 
-        // Don't use AzureWebJobsStorage for data storage in Production
         [FunctionName("NewFile")]
         public static async Task Run(
-            [BlobTrigger("data/{name}", Connection = "AzureWebJobsStorage")]Stream blob,
+            [BlobTrigger("data/{name}", Connection = "DataStorageConnectionString")]Stream blob,
             string name,
             ILogger log,
             ExecutionContext context)
@@ -35,10 +34,12 @@ namespace Examples.Minimal.Functions
             log.LogInformation($"C# Blob trigger function Processed blob\n Name:{name} \n Size: {blob.Length} Bytes");
 
             _log = log;
-            _config = GetConfig(context);
+            _config = FunctionsHelper.GetConfig(context);
 
             // Each line in the CSV is a transaction. Create Command as Event Data for each transaction.
-            List<EventData> batch = new List<EventData>();
+            var batches = new List<EventDataBatch>();
+            batches.Add(EventHubClient.CreateBatch());
+            int batchNo = 0;
 
             using (StreamReader reader = new StreamReader(blob))
             {
@@ -48,8 +49,12 @@ namespace Examples.Minimal.Functions
                 {
                     i++;
 
-                    // ignore header
-                    if (i == 1) continue;
+                    if (i == 1)
+                    {
+                        // ignore header
+                        reader.ReadLine();
+                        continue;
+                    }
 
                     // Parse line and create Command
                     TransactionCommand command = null;
@@ -66,13 +71,25 @@ namespace Examples.Minimal.Functions
                         if (errorCount > MaxErrorCount) throw;
                     }
 
-                    batch.Add(new EventData(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(command))));
+                    if (!batches[batchNo].TryAdd(new EventData(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(command)))))
+                    {
+                        // batch is full
+                        batches.Add(EventHubClient.CreateBatch());
+                        batchNo++;
+                        if (!batches[batchNo].TryAdd(new EventData(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(command)))))
+                        {
+                            throw new InvalidOperationException();
+                        }
+                    }
                 }
             }
 
-            // Send all transaction events in one batch operation
+            // Send all transaction events in batched operations
             // https://docs.microsoft.com/en-us/azure/event-hubs/event-hubs-dotnet-standard-getstarted-send
-            await EventHubClient.SendAsync(batch);
+            foreach(EventDataBatch batch in batches)
+            {
+                await EventHubClient.SendAsync(batch);
+            }
         }
 
         private static TransactionCommand ParseLineToCommand(int lineNumber, string line)
@@ -138,24 +155,10 @@ namespace Examples.Minimal.Functions
 
             var connectionStringBuilder = new EventHubsConnectionStringBuilder(eventHubConnectionString)
             {
-                EntityPath = EventHubName
+                EntityPath = Common.EventHubName
             };
 
             return EventHubClient.CreateFromConnectionString(connectionStringBuilder.ToString());
-        }
-
-        // helper to load configuration from file or env vars
-        private static IConfiguration GetConfig(ExecutionContext context)
-        {
-            var config = new ConfigurationBuilder()
-#if DEBUG
-               .SetBasePath(context.FunctionAppDirectory)
-               .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-#endif
-               .AddEnvironmentVariables()
-               .Build();
-
-            return config;
         }
     }
 }
