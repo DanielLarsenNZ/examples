@@ -21,4 +21,4 @@ az network vnet subnet create --name $backendSubnet -g $rg --vnet-name $vnet --a
 
 az network public-ip create -g $rg --name $pip --tags $tags --allocation-method Static --sku Standard
 
-az network application-gateway create -n $appGW -g $rg --location $location --tags $tags --public-ip-address $pip --frontend-port 80 --http-settings-port 80 --http-settings-protocol Http --routing-rule-type Basic --servers appserviceplanscale1-eus.azurewebsites.net appserviceplanscale2-eus.azurewebsites.net --sku WAF_v2 --subnet $frontendSubnet --vnet-name $vnet --verbose
+az network application-gateway create -n $appGW -g $rg --location $location --tags $tags --public-ip-address $pip --frontend-port 80 --http-settings-port 80 --http-settings-protocol Http --routing-rule-type Basic --servers appserviceplanscale1-eus.azurewebsites.net appserviceplanscale2-eus.azurewebsites.net --sku Standard_v2 --subnet $frontendSubnet --vnet-name $vnet --verbose

@@ -1,5 +1,4 @@
 using Examples.Minimal.Functions.Commands;
-using Microsoft.Azure.Amqp.Framing;
 using Microsoft.Azure.EventHubs;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
@@ -53,7 +52,7 @@ namespace Examples.Minimal.Functions
                     if (i == 1) continue;
 
                     // Parse line and create Command
-                    TransactionCommand command = null; 
+                    TransactionCommand command = null;
                     try
                     {
                         command = ParseLineToCommand(i, reader.ReadLine());
@@ -66,7 +65,7 @@ namespace Examples.Minimal.Functions
 
                         if (errorCount > MaxErrorCount) throw;
                     }
-                    
+
                     batch.Add(new EventData(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(command))));
                 }
             }
@@ -101,7 +100,7 @@ namespace Examples.Minimal.Functions
                 throw new InvalidOperationException(errorMessage);
             }
 
-            TransactionCommand command = null;
+            TransactionCommand command;
 
             if (amount >= 0)
             {
