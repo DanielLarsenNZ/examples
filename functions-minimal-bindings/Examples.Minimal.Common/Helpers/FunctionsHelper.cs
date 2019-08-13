@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Examples.Minimal.Functions.Helpers
+namespace Examples.Minimal.Helpers
 {
     public static class FunctionsHelper
     {

@@ -1,5 +1,5 @@
-using Examples.Minimal.Functions.Commands;
-using Examples.Minimal.Functions.Helpers;
+using Examples.Minimal.Commands;
+using Examples.Minimal.Helpers;
 using Microsoft.Azure.EventHubs;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;

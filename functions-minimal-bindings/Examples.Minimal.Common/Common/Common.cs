@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Examples.Minimal.Functions
+namespace Examples.Minimal
 {
-    internal static class Common
+    public static class Common
     {
         public const string EventHubName = "transactions";
     }

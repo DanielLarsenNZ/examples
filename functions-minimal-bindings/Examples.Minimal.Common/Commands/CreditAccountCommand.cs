@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows.Input;
 
-namespace Examples.Minimal.Functions.Commands
+namespace Examples.Minimal.Commands
 {
     public class CreditAccountCommand : TransactionCommand
     {

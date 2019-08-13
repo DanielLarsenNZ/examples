@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Examples.Minimal.Functions.Commands
+namespace Examples.Minimal.Commands
 {
     public class DebitAccountCommand : TransactionCommand
     {
