@@ -1,10 +1,8 @@
 # Event Sourcing
 
-See: <https://docs.microsoft.com/en-us/azure/architecture/patterns/cqrs#example>
 
 ## Links and references
 
-<https://docs.microsoft.com/en-us/azure/architecture/patterns/event-sourcing>
 
 <https://docs.microsoft.com/en-us/previous-versions/msp-n-p/jj591559(v=pandp.10)>
 
@@ -14,13 +12,27 @@ See: <https://docs.microsoft.com/en-us/azure/architecture/patterns/cqrs#example>
 
 <http://microsoftintegration.guru/2016/09/20/use-azure-function-to-deduplicate-messages-on-azure-service-bus/>
 
-MOre
+### Event Sourcing
+
+Command and Query Responsibility Segregation (CQRS) pattern example: <https://docs.microsoft.com/en-us/azure/architecture/patterns/cqrs#example>
+
+Event Sourcing pattern example: <https://docs.microsoft.com/en-us/azure/architecture/patterns/event-sourcing#example>
 
 <https://azure.microsoft.com/en-au/blog/processing-100-000-events-per-second-on-azure-functions/>
 
 <https://blogs.msdn.microsoft.com/kaevans/2015/02/24/scaling-azure-event-hubs-processing-with-worker-roles/>
 
-## Web jobs
+### Event Processor Host
+
+Event processor host: <https://docs.microsoft.com/en-us/azure/event-hubs/event-hubs-event-processor-host>
+
+Programming guide for Azure Event Hubs: <https://docs.microsoft.com/en-us/azure/event-hubs/event-hubs-programming-guide>
+
+Implement the IEventProcessor interface: <https://docs.microsoft.com/en-us/azure/event-hubs/event-hubs-dotnet-standard-getstarted-send#implement-the-ieventprocessor-interface>
+
+### WebJobs host
+
+Get started with the Azure WebJobs SDK for event-driven background processing: <https://docs.microsoft.com/en-us/azure/app-service/webjobs-sdk-get-started>
 
 WebJobs host: <https://docs.microsoft.com/en-us/azure/app-service/webjobs-sdk-how-to#webjobs-host>
 
@@ -28,4 +40,14 @@ _The host is a runtime container for functions. It listens for triggers and call
 
 _This is a key difference between using the WebJobs SDK directly and using it indirectly through Azure Functions. In Azure Functions, the service controls the host, and you can't customize the host by writing code. Azure Functions lets you customize host behavior through settings in the host.json file. Those settings are strings, not code, and this limits the kinds of customizations you can do._
 
-Event Hubs Packages - Functions 2.x: <https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs#packages---functions-2x>
+Azure Event Hubs bindings for Azure Functions: <https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-event-hubs#packages---functions-2x>
+
+Azure Webjobs SDK repo: <https://github.com/Azure/azure-webjobs-sdk/wiki>
+
+Azure WebJobs SDK Extensions repo: <https://github.com/Azure/azure-webjobs-sdk-extensions>
+
+### Add Console issue
+
+<https://github.com/Azure/azure-webjobs-sdk/issues>
+
+Try compile this: <https://github.com/Azure/azure-webjobs-sdk/blob/00686a5ae3b31ca1c70b477c1ca828e4aa754340/sample/SampleHost/Program.cs>

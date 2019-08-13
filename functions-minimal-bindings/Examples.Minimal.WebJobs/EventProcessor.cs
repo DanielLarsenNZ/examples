@@ -7,15 +7,17 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Examples.Minimal.WebJobs
 {
     public static class EventProcessor
     {
-        private static IConfiguration _config = null;
+        //private static IConfiguration _config = null;
+        private static ITransactionsCommandHandler _handler = new TransactionsCommandHandler();
 
         [FunctionName("EventProcessor")]
-        public static void Run(
+        public static async Task Run(
             [EventHubTrigger(Common.EventHubName)] EventData[] messages,
             ILogger log)
         {
@@ -43,7 +45,7 @@ namespace Examples.Minimal.WebJobs
                         throw new NotSupportedException($"\"{command.CommandType}\" is not a supported CommandType.");
                 }
 
-                log.LogInformation($"{command}");
+                //log.LogInformation($"{command}");
 
                 // check for dupes
 
@@ -51,33 +53,8 @@ namespace Examples.Minimal.WebJobs
 
 
                 // execute the command
-
+                await _handler.Handle(command);
             }
         }
-
-        //private static EventProcessorHost InitializeEventProcessorHost()
-        //{
-        //    string eventHubConnectionString = _config["EventHubConnectionString"];
-        //    string storageConnectionString = _config["ServicesStorageConnectionString"];
-        //    const string eventHubsStorageContainer = "eventhubs";   //TODO - host/partiion specific?
-
-        //    if (string.IsNullOrEmpty(eventHubConnectionString))
-        //        throw new InvalidOperationException("App Setting EventHubConnectionString is missing.");
-
-        //    if (string.IsNullOrEmpty(storageConnectionString))
-        //        throw new InvalidOperationException("App Setting StorageConnectionString is missing.");
-
-        //    var host = new EventProcessorHost(
-        //        Common.EventHubName,
-        //        PartitionReceiver.DefaultConsumerGroupName,
-        //        eventHubConnectionString,
-        //        storageConnectionString,
-        //        eventHubsStorageContainer);
-
-        //    // Registers the Event Processor Host and starts receiving messages
-        //    //host.RegisterEventProcessorAsync<SimpleEventProcessor>().GetAwaiter().GetResult();
-
-        //    return host;
-        //}
     }
 }
