@@ -35,13 +35,12 @@ namespace Examples.Minimal.WebJobs
                     a.BatchCheckpointFrequency = 5;
                     a.EventProcessorOptions.MaxBatchSize = 256;
                     a.EventProcessorOptions.PrefetchCount = 512;
-                    //a.AddReceiver(Common.EventHubName, "Endpoint=sb://functionsminbind-hub.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=+gj4jk/Yr1g5jvhAgIKtVwr0tj3asZ7hGgOo4MvUK20=");
                     a.AddEventProcessorHost(Common.EventHubName, InitializeEventProcessorHost());
                 });
             }).ConfigureLogging((context, b) =>
             {
                 b.SetMinimumLevel(LogLevel.Trace);
-                //b.AddConsole()
+                //b.AddConsole() #BUG
             });
 
             var host = builder.Build();

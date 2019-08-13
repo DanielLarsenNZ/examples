@@ -16,7 +16,6 @@ namespace Examples.Minimal.WebJobs
 
         [FunctionName("EventProcessor")]
         public static void Run(
-            //[EventHubTrigger(Common.EventHubName, Connection = "Endpoint=sb://functionsminbind-hub.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=+gj4jk/Yr1g5jvhAgIKtVwr0tj3asZ7hGgOo4MvUK20=")] EventData[] messages,
             [EventHubTrigger(Common.EventHubName)] EventData[] messages,
             ILogger log)
         {
