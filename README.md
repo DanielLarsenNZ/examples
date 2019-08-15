@@ -6,6 +6,16 @@ Quick examples for Azure, PowerShell and .NET.
 
 * [powershell-cheatsheet.md](./docs/powershell-cheatsheet.md) - A PowerShell cheatsheet.
 * [Verify Azure Functions host in Loader.io](./docs/verify-loader-azure-functions.md)
+* [Fun with App Settings in a WebJobs Host on .NET Core](./docs/fun-with-appsettings.md)
+
+## Solutions
+
+* [nginx-lb-appservices](./nginx-lb-appservices) - Load balance two (or more) App Services with nginx running in a Linux App Service container
+* [appgw-apim](./appgw-apim) - Deploy Azure App Gateway v2 WAF in front of Azure API Management.
+* [appserviceplan-scale-afd](./appserviceplan-scale-afd) - Achieve massive scale-out by deploying Azure
+  Front Door in front of multiple App Service Plans.
+* [functions-minimal-bindings](./functions-minimal-bindings) - Host Functions in a WebJobs Host to have
+  more control over bindings and triggers.
 
 ## Scripts
 
@@ -18,10 +28,6 @@ Quick examples for Azure, PowerShell and .NET.
 * [RewriteConfig.ps1](/Scripts/Deploy/RewriteConfig.ps1) - Rewrite XML config
   settings and save as a new file.
 * [deploy-config-apim.ps1](Scripts\Azure\deploy-config-apim.ps1) - Deploy Azure API Management
-
-## Solutions
-
-* [soltuions/nginx-lb-appservices](./solutions/nginx-lb-appservices) - Load balance two (or more) App Services with nginx running in a Linux App Service container
 
 ## Talks
 
