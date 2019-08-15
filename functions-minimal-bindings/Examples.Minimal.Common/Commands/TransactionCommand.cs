@@ -10,11 +10,15 @@ namespace Examples.Minimal.Commands
 
         public abstract string CommandType { get; }
 
+        public string Filename { get; set; }
+
         public string TransactionId { get; set; }
 
         public string AccountNumber { get; set; }
 
         public DateTime TransactionDateTime { get; set; }
+
+        public decimal Amount { get; set; }
 
         public string MerchantId { get; set; }
 

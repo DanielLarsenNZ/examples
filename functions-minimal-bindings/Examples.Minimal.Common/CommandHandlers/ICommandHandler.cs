@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Examples.Minimal.Commands
 {
-    public interface ICommandHandler<T>
+    public interface ICommandHandler<T> where T : ICommand
     {
         Task Handle(T command);
     }

@@ -15,27 +15,30 @@ namespace Examples.Minimal.WebJobs
 
         static void Main()
         {
-            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             Configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
 #if DEBUG
-                .AddJsonFile("local.settings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.json", optional: false, reloadOnChange: true)
 #endif
-                .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
 
             var builder = new HostBuilder();
 
+            Console.WriteLine($"Configuration.GetConnectionString(\"Storage\") = {Configuration.GetConnectionString("Storage")}");
+            Console.WriteLine($"Configuration.GetConnectionString(\"DataStorageConnectionString\") = {Configuration.GetConnectionString("DataStorageConnectionString")}");
+            Console.WriteLine($"Configuration.GetConnectionString(\"AzureWebJobsDataStorageConnectionString\") = {Configuration.GetConnectionString("AzureWebJobsDataStorageConnectionString")}");
+
             builder.ConfigureWebJobs(b =>
             {    
                 b.AddAzureStorageCoreServices();
-                b.AddEventHubs(a =>
+                b.AddAzureStorage();
+                b.AddEventHubs(h =>
                 {
-                    a.BatchCheckpointFrequency = 5;
-                    a.EventProcessorOptions.MaxBatchSize = 256;
-                    a.EventProcessorOptions.PrefetchCount = 512;
-                    a.AddEventProcessorHost(Common.EventHubName, InitializeEventProcessorHost());
+                    h.BatchCheckpointFrequency = 5;
+                    h.EventProcessorOptions.MaxBatchSize = 256;
+                    h.EventProcessorOptions.PrefetchCount = 512;
+                    h.AddEventProcessorHost(Common.EventHubName, InitializeEventProcessorHost());
                 });
             }).ConfigureLogging((context, b) =>
             {

@@ -21,14 +21,13 @@ namespace Examples.Minimal.WebJobs
             [EventHubTrigger(Common.EventHubName)] EventData[] messages,
             ILogger log)
         {
-            Console.WriteLine($"C# function triggered to process {messages.Length} messages.");
             log.LogInformation($"C# function triggered to process {messages.Length} messages.");
+            Logger.LogInformation($"C# function triggered to process {messages.Length} messages.");
             //_config = FunctionsHelper.GetConfig(context);
             foreach (EventData message in messages)
             {
                 // deserialise
                 string data = Encoding.UTF8.GetString(message.Body.Array, message.Body.Offset, message.Body.Count);
-                Console.WriteLine(data);
 
                 //TODO: Don't deserialise twice
                 dynamic command = JsonConvert.DeserializeObject(data);
