@@ -33,18 +33,18 @@ $dataStorageConnection = ( az storage account show-connection-string -g $rg -n $
 az extension add -n application-insights
 
 #  https://docs.microsoft.com/en-us/cli/azure/ext/application-insights/monitor/app-insights/component?view=azure-cli-latest
-$instrumentationKey = ( az monitor app-insights component create --app $insights --location $location -g $rg --tags $tags | ConvertFrom-Json ).instrumentationKey
+#$instrumentationKey = ( az monitor app-insights component create --app $insights --location $location -g $rg --tags $tags | ConvertFrom-Json ).instrumentationKey
 
 # Create Function
 # https://docs.microsoft.com/en-us/cli/azure/functionapp?view=azure-cli-latest
-az functionapp create -g $rg --tags $tags -p $plan -n $function -s $servicesStorage -p $plan --os-type Windows --runtime dotnet --app-insights $insights --app-insights-key $instrumentationKey
+#az functionapp create -g $rg --tags $tags -p $plan -n $function -s $servicesStorage -p $plan --os-type Windows --runtime dotnet --app-insights $insights --app-insights-key $instrumentationKey
 
 # Package and zip the app
-dotnet publish .\Examples.Minimal.Functions\ --configuration Release -o ../_zip
-Compress-Archive -Path ./_zip/* -DestinationPath ./deploy.zip -Force
+#dotnet publish .\Examples.Minimal.Functions\ --configuration Release -o ../_zip
+#Compress-Archive -Path ./_zip/* -DestinationPath ./deploy.zip -Force
 
 # Deploy source code
-az functionapp deployment source config-zip -g $rg -n $function --src ./deploy.zip
+#az functionapp deployment source config-zip -g $rg -n $function --src ./deploy.zip
 
 # Create Event Hub and namespace and get the key
 # https://docs.microsoft.com/en-us/cli/azure/eventhubs?view=azure-cli-latest
@@ -55,9 +55,9 @@ az eventhubs eventhub create -g $rg --namespace-name $eventhubNamespace --name '
 $eventHubConnectionString = ( az eventhubs namespace authorization-rule keys list -g $rg --namespace-name $eventhubNamespace --name 'RootManageSharedAccessKey' | ConvertFrom-Json ).primaryConnectionString
 
 # Set connection strings in a Function App Setting
-az functionapp config appsettings set --name $function -g $rg --settings "AzureWebJobsStorage=$servicesStorageConnection"
-az functionapp config appsettings set --name $function -g $rg --settings "DataStorageConnectionString=$dataStorageConnection"
-az functionapp config appsettings set --name $function -g $rg --settings "EventHubConnectionString=$eventHubConnectionString"
+#az functionapp config appsettings set --name $function -g $rg --settings "AzureWebJobsStorage=$servicesStorageConnection"
+#az functionapp config appsettings set --name $function -g $rg --settings "DataStorageConnectionString=$dataStorageConnection"
+#az functionapp config appsettings set --name $function -g $rg --settings "EventHubConnectionString=$eventHubConnectionString"
 
 # Count to 10
 Start-Sleep 10

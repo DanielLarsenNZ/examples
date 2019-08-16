@@ -31,11 +31,9 @@ namespace Examples.Minimal.WebJobs
                 b.AddAzureStorage();
                 b.AddEventHubs(h =>
                 {
-                    h.BatchCheckpointFrequency = 5;
-                    h.EventProcessorOptions.MaxBatchSize = 256;
-                    h.EventProcessorOptions.PrefetchCount = 512;
-                    //h.AddEventProcessorHost(Common.EventHubName, InitializeEventProcessorHost());
-                    //h.AddReceiver()
+                    h.BatchCheckpointFrequency = 1;
+                    h.EventProcessorOptions.MaxBatchSize = 100;
+                    h.EventProcessorOptions.PrefetchCount = (h.EventProcessorOptions.MaxBatchSize * 2);
                 });
             }).ConfigureLogging((context, b) =>
             {
@@ -50,26 +48,26 @@ namespace Examples.Minimal.WebJobs
             }
         }
          
-        private static EventProcessorHost InitializeEventProcessorHost()
-        {
-            string eventHubConnectionString = Configuration["EventHubConnectionString"];
-            string storageConnectionString = Configuration["ServicesStorageConnectionString"];
-            const string eventHubsStorageContainer = "eventhubs";   //TODO - host/partiion specific?
+        //private static EventProcessorHost InitializeEventProcessorHost()
+        //{
+        //    string eventHubConnectionString = Configuration["EventHubConnectionString"];
+        //    string storageConnectionString = Configuration["ServicesStorageConnectionString"];
+        //    const string eventHubsStorageContainer = "eventhubs";   //TODO - host/partiion specific?
 
-            if (string.IsNullOrEmpty(eventHubConnectionString))
-                throw new InvalidOperationException("App Setting EventHubConnectionString is missing.");
+        //    if (string.IsNullOrEmpty(eventHubConnectionString))
+        //        throw new InvalidOperationException("App Setting EventHubConnectionString is missing.");
 
-            if (string.IsNullOrEmpty(storageConnectionString))
-                throw new InvalidOperationException("App Setting StorageConnectionString is missing.");
+        //    if (string.IsNullOrEmpty(storageConnectionString))
+        //        throw new InvalidOperationException("App Setting StorageConnectionString is missing.");
 
-            var host = new EventProcessorHost(
-                Common.EventHubName,
-                PartitionReceiver.DefaultConsumerGroupName,
-                eventHubConnectionString,
-                storageConnectionString,
-                eventHubsStorageContainer);
+        //    var host = new EventProcessorHost(
+        //        Common.EventHubName,
+        //        PartitionReceiver.DefaultConsumerGroupName,
+        //        eventHubConnectionString,
+        //        storageConnectionString,
+        //        eventHubsStorageContainer);
 
-            return host;
-        }
+        //    return host;
+        //}
     }
 }

@@ -2,6 +2,7 @@ using Examples.Minimal.Commands;
 using Examples.Minimal.Data;
 using Examples.Minimal.Helpers;
 using Microsoft.Azure.EventHubs;
+using Microsoft.Azure.EventHubs.Processor;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -21,7 +22,8 @@ namespace Examples.Minimal.WebJobs
         [FunctionName("EventProcessor")]
         public static async Task Run(
             [EventHubTrigger(Common.EventHubName, Connection = "EventHubConnectionString")] EventData[] messages,
-            ILogger log)
+            ILogger log,
+            PartitionContext partitionContext)
         {
             log.LogInformation($"C# function triggered to process {messages.Length} messages.");
             Logger.LogInformation($"C# function triggered to process {messages.Length} messages.");
@@ -46,20 +48,21 @@ namespace Examples.Minimal.WebJobs
                         throw new NotSupportedException($"\"{command.CommandType}\" is not a supported CommandType.");
                 }
 
-                //log.LogInformation($"{command}");
-
-                // check for dupes
-
-
+                //TODO: check for dupes
 
 
                 // execute the command
                 await _handler.Handle(command);
             }
 
-            Logger.LogInformation($"Events: {messages.Length}");
+
+            Logger.LogInformation($"PartitionId: {partitionContext.PartitionId}");
+            //Logger.LogInformation($"offset: {offset}");
+            //Logger.LogInformation($"sequenceNumber: {sequenceNumber}");
+            Logger.LogInformation($"Owner: {partitionContext.Owner}");
             Logger.LogInformation($"Sum of all Transactions to date Amount: {TransactionsRepository._transactionData.Sum(t=>t.Value.Amount)}");
             Logger.LogInformation($"Sum of all Account Balances: {TransactionsRepository._accountBalanceData.Sum(b=>b.Value)}");
+            Logger.LogInformation($"Count of all Transactions: {TransactionsRepository._transactionData.Count}");
         }
     }
 }

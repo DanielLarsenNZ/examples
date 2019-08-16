@@ -1,8 +1,13 @@
 # Event Sourcing
 
+## Gotchas
+
+Read [/docs/fun-with-appsettings.md](/docs/fun-with-appsettings.md)
+
+Make sure `BatchCheckpointFrequency` is set to default of 1, otherwise you may wonder why some of your
+checkpoints are not being committed! (like I did for about 3 hours)
 
 ## Links and references
-
 
 <https://docs.microsoft.com/en-us/previous-versions/msp-n-p/jj591559(v=pandp.10)>
 
@@ -29,6 +34,14 @@ Event processor host: <https://docs.microsoft.com/en-us/azure/event-hubs/event-h
 Programming guide for Azure Event Hubs: <https://docs.microsoft.com/en-us/azure/event-hubs/event-hubs-programming-guide>
 
 Implement the IEventProcessor interface: <https://docs.microsoft.com/en-us/azure/event-hubs/event-hubs-dotnet-standard-getstarted-send#implement-the-ieventprocessor-interface>
+
+Checkpointing: <https://docs.microsoft.com/en-us/azure/event-hubs/event-hubs-event-processor-host#checkpointing>
+
+Azure Functions and Event Hubs: Optimising for Throughput: <https://medium.com/@iizotov/azure-functions-and-event-hubs-optimising-for-throughput-549c7acd2b75>
+
+Reliable Event Processing in Azure Functions: <https://hackernoon.com/reliable-event-processing-in-azure-functions-37054dc2d0fc>
+
+Provide a configurable retry policy for event hub triggered functions: <https://github.com/Azure/azure-webjobs-sdk/issues/1597>
 
 ### WebJobs host
 

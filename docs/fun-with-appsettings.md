@@ -75,3 +75,9 @@ the App Setting name.
 ## What about Functions?
 
 Functions works the same, but the file is called `local.settings.json`.
+
+## Links and references
+
+StorageAccountProvider.cs sourcecode: <https://github.com/Azure/azure-webjobs-sdk/blob/8ea5470afad803e6c23f46ef15910242b770136c/src/Microsoft.Azure.WebJobs.Extensions.Storage/StorageAccountProvider.cs>
+
+Github issue: <https://github.com/Azure/azure-functions-core-tools/issues/89>
