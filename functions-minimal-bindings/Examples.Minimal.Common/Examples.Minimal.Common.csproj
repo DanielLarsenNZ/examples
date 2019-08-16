@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\" />
+    <Folder Include="NewFolder\" />
   </ItemGroup>
 
 </Project>

@@ -35,6 +35,7 @@ namespace Examples.Minimal.WebJobs
 
             _log = log;
             //_config = FunctionsHelper.GetConfig(context);
+            _config = Program.Configuration; //TODO: Yergh
 
             // Each line in the CSV is a transaction. Create Command as Event Data for each transaction.
             var batches = new List<EventDataBatch>();

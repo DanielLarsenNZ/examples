@@ -1,4 +1,5 @@
-﻿using Examples.Minimal.Models;
+﻿using Examples.Minimal.Data;
+using Examples.Minimal.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,26 +13,22 @@ namespace Examples.Minimal.Commands
         ICommandHandler<DebitAccountCommand>,
         ICommandHandler<CreditAccountCommand> 
     {
-        //private readonly IRepository<Transaction> repository;
+        private readonly TransactionsRepository _repository = new TransactionsRepository();
 
         public TransactionsCommandHandler()
         {
-            //this.repository = repository;
         }
 
         public async Task Handle(DebitAccountCommand command)
         {
-            //...
+            var transaction = TransactionMapper.MapToTransaction(command);
+            _repository.AddTransaction(transaction);
         }
 
         public async Task Handle(CreditAccountCommand command)
         {
-            //var product = repository.Find(command.ProductId);
-            //if (product != null)
-            //{
-            //    product.RateProduct(command.UserId, command.Rating);
-            //    repository.Save(product);
-            //}
+            var transaction = TransactionMapper.MapToTransaction(command);
+            _repository.AddTransaction(transaction);
         }
     }
 }

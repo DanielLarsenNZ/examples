@@ -1,4 +1,5 @@
 using Examples.Minimal.Commands;
+using Examples.Minimal.Data;
 using Examples.Minimal.Helpers;
 using Microsoft.Azure.EventHubs;
 using Microsoft.Azure.WebJobs;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,7 +20,7 @@ namespace Examples.Minimal.WebJobs
 
         [FunctionName("EventProcessor")]
         public static async Task Run(
-            [EventHubTrigger(Common.EventHubName)] EventData[] messages,
+            [EventHubTrigger(Common.EventHubName, Connection = "EventHubConnectionString")] EventData[] messages,
             ILogger log)
         {
             log.LogInformation($"C# function triggered to process {messages.Length} messages.");
@@ -54,6 +56,10 @@ namespace Examples.Minimal.WebJobs
                 // execute the command
                 await _handler.Handle(command);
             }
+
+            Logger.LogInformation($"Events: {messages.Length}");
+            Logger.LogInformation($"Sum of all Transactions to date Amount: {TransactionsRepository._transactionData.Sum(t=>t.Value.Amount)}");
+            Logger.LogInformation($"Sum of all Account Balances: {TransactionsRepository._accountBalanceData.Sum(b=>b.Value)}");
         }
     }
 }

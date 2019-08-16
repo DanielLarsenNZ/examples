@@ -11,7 +11,7 @@ namespace Examples.Minimal.WebJobs
 {
     class Program
     {
-        static IConfiguration Configuration;
+        public static IConfiguration Configuration;
 
         static void Main()
         {
@@ -25,10 +25,6 @@ namespace Examples.Minimal.WebJobs
 
             var builder = new HostBuilder();
 
-            Console.WriteLine($"Configuration.GetConnectionString(\"Storage\") = {Configuration.GetConnectionString("Storage")}");
-            Console.WriteLine($"Configuration.GetConnectionString(\"DataStorageConnectionString\") = {Configuration.GetConnectionString("DataStorageConnectionString")}");
-            Console.WriteLine($"Configuration.GetConnectionString(\"AzureWebJobsDataStorageConnectionString\") = {Configuration.GetConnectionString("AzureWebJobsDataStorageConnectionString")}");
-
             builder.ConfigureWebJobs(b =>
             {    
                 b.AddAzureStorageCoreServices();
@@ -38,12 +34,13 @@ namespace Examples.Minimal.WebJobs
                     h.BatchCheckpointFrequency = 5;
                     h.EventProcessorOptions.MaxBatchSize = 256;
                     h.EventProcessorOptions.PrefetchCount = 512;
-                    h.AddEventProcessorHost(Common.EventHubName, InitializeEventProcessorHost());
+                    //h.AddEventProcessorHost(Common.EventHubName, InitializeEventProcessorHost());
+                    //h.AddReceiver()
                 });
             }).ConfigureLogging((context, b) =>
             {
                 b.SetMinimumLevel(LogLevel.Trace);
-                //b.AddConsole() #BUG
+                //b.AddConsole() #BUG?
             });
 
             var host = builder.Build();
@@ -52,7 +49,7 @@ namespace Examples.Minimal.WebJobs
                 host.Run();
             }
         }
-
+         
         private static EventProcessorHost InitializeEventProcessorHost()
         {
             string eventHubConnectionString = Configuration["EventHubConnectionString"];
@@ -71,9 +68,6 @@ namespace Examples.Minimal.WebJobs
                 eventHubConnectionString,
                 storageConnectionString,
                 eventHubsStorageContainer);
-
-            // Registers the Event Processor Host and starts receiving messages
-            //host.RegisterEventProcessorAsync<SimpleEventProcessor>().GetAwaiter().GetResult();
 
             return host;
         }

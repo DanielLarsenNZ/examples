@@ -55,7 +55,7 @@ az eventhubs eventhub create -g $rg --namespace-name $eventhubNamespace --name '
 $eventHubConnectionString = ( az eventhubs namespace authorization-rule keys list -g $rg --namespace-name $eventhubNamespace --name 'RootManageSharedAccessKey' | ConvertFrom-Json ).primaryConnectionString
 
 # Set connection strings in a Function App Setting
-az functionapp config appsettings set --name $function -g $rg --settings "ServicesStorageConnectionString=$servicesStorageConnection"
+az functionapp config appsettings set --name $function -g $rg --settings "AzureWebJobsStorage=$servicesStorageConnection"
 az functionapp config appsettings set --name $function -g $rg --settings "DataStorageConnectionString=$dataStorageConnection"
 az functionapp config appsettings set --name $function -g $rg --settings "EventHubConnectionString=$eventHubConnectionString"
 
