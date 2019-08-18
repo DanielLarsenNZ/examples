@@ -61,7 +61,15 @@ Azure WebJobs SDK Extensions repo: <https://github.com/Azure/azure-webjobs-sdk-e
 
 Singleton Attribute: <https://github.com/Azure/azure-webjobs-sdk/blob/b798412ad74ba97cf2d85487ae8479f277bdd85c/src/Microsoft.Azure.WebJobs/SingletonAttribute.cs>
 
-### Add Console issue
+### Performance settings
+
+<https://github.com/projectkudu/kudu/wiki/WebJobs#configuration-settings>
+
+### WebJobs Kudu
+
+Reference: <https://github.com/projectkudu/kudu/wiki/WebJobs>
+
+### AddConsole() issue
 
 <https://github.com/Azure/azure-webjobs-sdk/issues>
 
