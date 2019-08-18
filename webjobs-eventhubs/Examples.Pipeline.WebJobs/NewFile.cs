@@ -23,6 +23,7 @@ namespace Examples.Pipeline.WebJobs
         private static EventHubClient EventHubClient => _lazyClient.Value;
 
         [FunctionName("NewFile")]
+        [Singleton]
         public static async Task Run(
             [BlobTrigger("data/{filename}", Connection = "DataStorageConnectionString")]Stream blob,
             string filename,

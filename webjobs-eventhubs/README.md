@@ -59,6 +59,8 @@ Azure Webjobs SDK repo: <https://github.com/Azure/azure-webjobs-sdk/wiki>
 
 Azure WebJobs SDK Extensions repo: <https://github.com/Azure/azure-webjobs-sdk-extensions>
 
+Singleton Attribute: <https://github.com/Azure/azure-webjobs-sdk/blob/b798412ad74ba97cf2d85487ae8479f277bdd85c/src/Microsoft.Azure.WebJobs/SingletonAttribute.cs>
+
 ### Add Console issue
 
 <https://github.com/Azure/azure-webjobs-sdk/issues>

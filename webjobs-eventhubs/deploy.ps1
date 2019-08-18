@@ -1,63 +1,73 @@
-# Deploy environment and code to demonstrate Azure Functions with minimal Bindings.
-# This script deploys an App Service Plan, Storage Account and Event Hub.
+# Deploy environment and code to demonstrate running Event (Hubs) Processor Host in a WebJob Host.
+# This script deploys an App Service Plan, Storage Accounts, Application Insights and an Event Hub.
 
 $location = 'australiaeast'
 $loc = 'aue'
-$rg = 'functionsminbind-rg'
-$tags = 'project=functions-minimal-bindings'
-$plan = "functionsminbind-$loc-plan"
-$planSku = 'B1'
-$function = "functionsminbind-$loc"
-$servicesStorage = "funminbindsvcs$loc"
-$dataStorage = "funminbinddata$loc"
+$rg = 'webjobevents-rg'
+$tags = 'project=webjobs-eventhubs'
+$plan = "webjobevents-$loc-plan"
+$app = "webjobevents-$loc"
+$webjobsStorage = "webjobevents$loc"
+$dataStorage = "webjobeventsdata$loc"
 $container = 'data'
-$insights = 'functionsminbind-insights'
-$eventhubNamespace = 'functionsminbind-hub'
+$insights = 'webjobevents-insights'
+$eventhubNamespace = 'webjobevents-hub'
+
+# Consider these settings for scale
+$planSku = 'B1'         # Scale up
+$planInstances = 2      # Scale out
 
 # Create Resource Group
 az group create -n $rg --location $location --tags $tags
 
-# Create App Service Plan
-az appservice plan create -n $plan -g $rg --location $location --sku $planSku --number-of-workers 1 --tags $tags
 
-# Create Storage Accounts
+# STORAGE ACCOUNTS
 # https://docs.microsoft.com/en-us/cli/azure/storage/account?view=azure-cli-latest#az-storage-account-create
-az storage account create -n $servicesStorage -g $rg -l $location --tags $tags --sku Standard_LRS
+az storage account create -n $webjobsStorage -g $rg -l $location --tags $tags --sku Standard_LRS
 az storage account create -n $dataStorage -g $rg -l $location --tags $tags --sku Standard_LRS
 
-$servicesStorageConnection = ( az storage account show-connection-string -g $rg -n $servicesStorage | ConvertFrom-Json ).connectionString
+$webjobsStorageConnection = ( az storage account show-connection-string -g $rg -n $webjobsStorage | ConvertFrom-Json ).connectionString
 $dataStorageConnection = ( az storage account show-connection-string -g $rg -n $dataStorage | ConvertFrom-Json ).connectionString
 
 
-# Create an Application Insights instance and get the instrumentation key
+# APPLICATION INSIGHTS
+#  https://docs.microsoft.com/en-us/cli/azure/ext/application-insights/monitor/app-insights/component?view=azure-cli-latest
 az extension add -n application-insights
 
-#  https://docs.microsoft.com/en-us/cli/azure/ext/application-insights/monitor/app-insights/component?view=azure-cli-latest
-#$instrumentationKey = ( az monitor app-insights component create --app $insights --location $location -g $rg --tags $tags | ConvertFrom-Json ).instrumentationKey
+$instrumentationKey = ( az monitor app-insights component create --app $insights --location $location -g $rg --tags $tags | ConvertFrom-Json ).instrumentationKey
 
-# Create Function
-# https://docs.microsoft.com/en-us/cli/azure/functionapp?view=azure-cli-latest
-#az functionapp create -g $rg --tags $tags -p $plan -n $function -s $servicesStorage -p $plan --os-type Windows --runtime dotnet --app-insights $insights --app-insights-key $instrumentationKey
 
-# Package and zip the app
-#dotnet publish .\Examples.Minimal.Functions\ --configuration Release -o ../_zip
-#Compress-Archive -Path ./_zip/* -DestinationPath ./deploy.zip -Force
+# APP SERVICES
+# Create App Service Plan
+az appservice plan create -n $plan -g $rg --location $location --sku $planSku --number-of-workers $planInstances --tags $tags
+
+# Create WebJob app
+az webapp create -n $app --plan $plan -g $rg --tags $tags
+
+# Configure always on
+az webapp config set -n $app -g $rg --always-on true
+
+# Package and zip the WebJob
+dotnet publish .\Examples.Pipeline.WebJobs\ --configuration Release -o '../_zip/app_data/Jobs/Continuous/Examples.Pipeline.Webjobs'
+copy ./run.cmd './_zip/app_data/Jobs/Continuous/Examples.Pipeline.Webjobs'
+Compress-Archive -Path ./_zip/* -DestinationPath ./deploy.zip -Force
 
 # Deploy source code
-#az functionapp deployment source config-zip -g $rg -n $function --src ./deploy.zip
+az webapp deployment source config-zip -g $rg -n $app --src ./deploy.zip
 
-# Create Event Hub and namespace and get the key
+
+# EVENT HUBS
 # https://docs.microsoft.com/en-us/cli/azure/eventhubs?view=azure-cli-latest
+# Create Event Hub and namespace and get the key
 az eventhubs namespace create -g $rg --name $eventhubNamespace --location $location --tags $tags --sku Basic
 az eventhubs eventhub create -g $rg --namespace-name $eventhubNamespace --name 'transactions' --message-retention 1 --partition-count 2
 
 # Don't use RootManageSharedAccessKey in Production
 $eventHubConnectionString = ( az eventhubs namespace authorization-rule keys list -g $rg --namespace-name $eventhubNamespace --name 'RootManageSharedAccessKey' | ConvertFrom-Json ).primaryConnectionString
 
-# Set connection strings in a Function App Setting
-#az functionapp config appsettings set --name $function -g $rg --settings "AzureWebJobsStorage=$servicesStorageConnection"
-#az functionapp config appsettings set --name $function -g $rg --settings "DataStorageConnectionString=$dataStorageConnection"
-#az functionapp config appsettings set --name $function -g $rg --settings "EventHubConnectionString=$eventHubConnectionString"
+
+# APP SETTINGS
+az webapp config appsettings set -n $app -g $rg --settings "APPINSIGHTS_INSTRUMENTATIONKEY=$instrumentationKey" "AzureWebJobsStorage=$webjobsStorageConnection" "DataStorageConnectionString=$dataStorageConnection" "EventHubConnectionString=$eventHubConnectionString"
 
 # Count to 10
 Start-Sleep 10
