@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Examples.Minimal
+namespace Examples.Pipeline.WebJobs
 {
-    public static class Common
+    public class Common
     {
         public const string EventHubName = "transactions";
     }

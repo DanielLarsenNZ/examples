@@ -1,6 +1,6 @@
-using Examples.Minimal.Commands;
-using Examples.Minimal.Data;
-using Examples.Minimal.Helpers;
+using Examples.Pipeline.Commands;
+using Examples.Pipeline.Data;
+using Examples.Pipeline.Helpers;
 using Microsoft.Azure.EventHubs;
 using Microsoft.Azure.EventHubs.Processor;
 using Microsoft.Azure.WebJobs;
@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Examples.Minimal.WebJobs
+namespace Examples.Pipeline.WebJobs
 {
     public static class EventProcessor
     {

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Examples.Minimal.Commands
+namespace Examples.Pipeline.Commands
 {
     public interface ITransactionsCommandHandler
     {

@@ -1,10 +1,10 @@
-﻿using Examples.Minimal.Commands;
-using Examples.Minimal.Models;
+﻿using Examples.Pipeline.Commands;
+using Examples.Pipeline.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Examples.Minimal.Data
+namespace Examples.Pipeline.Data
 {
     public class TransactionMapper
     {

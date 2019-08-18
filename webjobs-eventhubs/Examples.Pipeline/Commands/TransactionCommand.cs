@@ -2,11 +2,17 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Examples.Minimal.Models
+namespace Examples.Pipeline.Commands
 {
-    public class Transaction
+    public abstract class TransactionCommand : ICommand
     {
         public Guid Id { get; set; }
+
+        public abstract string CommandType { get; }
+
+        public string Filename { get; set; }
+
+        public string TransactionId { get; set; }
 
         public string AccountNumber { get; set; }
 
@@ -17,7 +23,5 @@ namespace Examples.Minimal.Models
         public string MerchantId { get; set; }
 
         public string AuthorizationCode { get; set; }
-
-        public bool IsDebit { get; set; }
     }
 }

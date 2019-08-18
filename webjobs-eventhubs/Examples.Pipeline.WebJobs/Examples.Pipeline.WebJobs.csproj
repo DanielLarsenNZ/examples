@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Examples.Minimal.Common\Examples.Minimal.Common.csproj" />
+    <ProjectReference Include="..\Examples.Pipeline\Examples.Pipeline.csproj" />
   </ItemGroup>
 
   <ItemGroup>

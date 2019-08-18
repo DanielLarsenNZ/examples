@@ -1,5 +1,5 @@
-using Examples.Minimal.Commands;
-using Examples.Minimal.Helpers;
+using Examples.Pipeline.Commands;
+using Examples.Pipeline.Helpers;
 using Microsoft.Azure.EventHubs;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
@@ -11,7 +11,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Examples.Minimal.Functions
+namespace Examples.Pipeline.WebJobs
 {
     public static class NewFile
     {
@@ -24,27 +24,29 @@ namespace Examples.Minimal.Functions
 
         [FunctionName("NewFile")]
         public static async Task Run(
-            [BlobTrigger("data/{name}", Connection = "DataStorageConnectionString")]Stream blob,
-            string name,
-            ILogger log,
-            ExecutionContext context)
+            [BlobTrigger("data/{filename}", Connection = "DataStorageConnectionString")]Stream blob,
+            string filename,
+            ILogger log)
         {
             const int MaxErrorCount = 5;
 
-            log.LogInformation($"C# Blob trigger function Processed blob\n Name:{name} \n Size: {blob.Length} Bytes");
+            log.LogInformation($"C# Blob trigger function Processed blob\n Name:{filename} \n Size: {blob.Length} Bytes");
+            Logger.LogInformation($"C# Blob trigger function Processed blob\n Name:{filename} \n Size: {blob.Length} Bytes");
 
             _log = log;
-            _config = FunctionsHelper.GetConfig(context);
+            //_config = FunctionsHelper.GetConfig(context);
+            _config = Program.Configuration; //TODO: Yergh
 
             // Each line in the CSV is a transaction. Create Command as Event Data for each transaction.
             var batches = new List<EventDataBatch>();
             batches.Add(EventHubClient.CreateBatch());
             int batchNo = 0;
+            decimal checksum = 0;
+            int i = 0;
+            int errorCount = 0;
 
             using (StreamReader reader = new StreamReader(blob))
             {
-                int i = 0;
-                int errorCount = 0;
                 while (reader.Peek() >= 0)
                 {
                     i++;
@@ -60,19 +62,20 @@ namespace Examples.Minimal.Functions
                     TransactionCommand command = null;
                     try
                     {
-                        command = ParseLineToCommand(i, reader.ReadLine());
+                        command = ParseLineToCommand(filename, i, reader.ReadLine());
                     }
                     catch (InvalidOperationException ex)
                     {
                         errorCount++;
 
-                        _log.LogError(ex, $"errorCount = {errorCount}. {ex.Message}");
+                        Logger.LogError(ex, $"errorCount = {errorCount}. {ex.Message}");
 
                         if (errorCount > MaxErrorCount) throw;
                     }
 
                     if (!batches[batchNo].TryAdd(new EventData(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(command)))))
                     {
+                        Logger.LogInformation($"Batch {batchNo} is full at line {i}. Adding new batch");
                         // batch is full
                         batches.Add(EventHubClient.CreateBatch());
                         batchNo++;
@@ -81,18 +84,29 @@ namespace Examples.Minimal.Functions
                             throw new InvalidOperationException();
                         }
                     }
+
+                    checksum += command.Amount;
                 }
             }
 
             // Send all transaction events in batched operations
             // https://docs.microsoft.com/en-us/azure/event-hubs/event-hubs-dotnet-standard-getstarted-send
-            foreach(EventDataBatch batch in batches)
-            {
+            int eventCount = 0;
+            foreach (EventDataBatch batch in batches)
+            { 
+                Logger.LogInformation($"Sending batch of {batch.Count} events.");
                 await EventHubClient.SendAsync(batch);
+                eventCount += batch.Count;
             }
+
+            Logger.LogInformation($"Filename: {filename}");
+            Logger.LogInformation($"Lines (incl. header): {i}");
+            Logger.LogInformation($"Events: {eventCount}");
+            Logger.LogInformation($"Batches: {batches.Count}");
+            Logger.LogInformation($"Sum of amount: {checksum}");
         }
 
-        private static TransactionCommand ParseLineToCommand(int lineNumber, string line)
+        private static TransactionCommand ParseLineToCommand(string filename, int lineNumber, string line)
         {
             const int IdField = 0;
             const int AccountNumberField = 1;
@@ -106,14 +120,14 @@ namespace Examples.Minimal.Functions
             if (!decimal.TryParse(fields[AmountField].Replace("$", ""), out decimal amount))
             {
                 string errorMessage = $"Could not parse amount to decimal: line #{lineNumber} field #{AmountField} \"{fields[AmountField]}\"";
-                _log.LogError(errorMessage);
+                Logger.LogError(errorMessage);
                 throw new InvalidOperationException(errorMessage);
             }
 
             if (!DateTime.TryParse(fields[DateTimeField], out DateTime dateTime))
             {
                 string errorMessage = $"Could not parse date_time to DateTime: line #{lineNumber} field #{DateTimeField} \"{fields[DateTimeField]}\"";
-                _log.LogError(errorMessage);
+                Logger.LogError(errorMessage);
                 throw new InvalidOperationException(errorMessage);
             }
 
@@ -132,15 +146,17 @@ namespace Examples.Minimal.Functions
                 // Debit
                 command = new DebitAccountCommand
                 {
-                    DebitAmount = amount
+                    DebitAmount = Math.Abs(amount)
                 };
             }
 
             command.Id = Guid.NewGuid();
+            command.Filename = filename;
             command.AccountNumber = fields[AccountNumberField];
             command.AuthorizationCode = fields[AuthorizationField];
             command.MerchantId = fields[MerchantField];
             command.TransactionDateTime = dateTime;
+            command.Amount = amount;
             command.TransactionId = fields[IdField];
 
             return command;

@@ -1,11 +1,11 @@
-﻿using Examples.Minimal.Data;
-using Examples.Minimal.Models;
+﻿using Examples.Pipeline.Data;
+using Examples.Pipeline.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Examples.Minimal.Commands
+namespace Examples.Pipeline.Commands
 {
     /// <remarks>Adapted from https://docs.microsoft.com/en-us/azure/architecture/patterns/cqrs#example </remarks>
     public class TransactionsCommandHandler :

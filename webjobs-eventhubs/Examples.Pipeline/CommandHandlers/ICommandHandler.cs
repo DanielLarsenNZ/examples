@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Examples.Minimal.Commands
+namespace Examples.Pipeline.Commands
 {
     public interface ICommandHandler<T> where T : ICommand
     {

@@ -7,7 +7,7 @@ using Microsoft.Azure.WebJobs.Logging;
 using System;
 using System.IO;
 
-namespace Examples.Minimal.WebJobs
+namespace Examples.Pipeline.WebJobs
 {
     class Program
     {

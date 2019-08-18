@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Examples.Minimal.WebJobs
+namespace Examples.Pipeline.WebJobs
 {
     internal class Logger
     {

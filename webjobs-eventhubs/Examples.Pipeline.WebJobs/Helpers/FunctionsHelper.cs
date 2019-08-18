@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Examples.Minimal.Helpers
+namespace Examples.Pipeline.Helpers
 {
-    public static class FunctionsHelper
+    public static class WebJobsHelper
     {
         // helper to load configuration from file or env vars
         public static IConfiguration GetConfig(ExecutionContext context)
@@ -14,7 +14,7 @@ namespace Examples.Minimal.Helpers
             var config = new ConfigurationBuilder()
 #if DEBUG
                .SetBasePath(context.FunctionAppDirectory)
-               .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
+               .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
 #endif
                .AddEnvironmentVariables()
                .Build();
