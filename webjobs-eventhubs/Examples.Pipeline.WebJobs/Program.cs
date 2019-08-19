@@ -30,13 +30,15 @@ namespace Examples.Pipeline.WebJobs
                 });
             });
 
-            builder.ConfigureServices(s =>
+            builder.ConfigureServices((context, s) =>
             {
                 // https://xfischer.github.io/logging-dotnet-core/
                 s.AddLogging(config =>
                 {
                     config.AddDebug(); // Log to debug (debug window in Visual Studio or any debugger attached)
                     config.AddConsole(); // Log to console (colored !)
+                    // https://docs.microsoft.com/en-us/azure/app-service/webjobs-sdk-get-started#add-application-insights-logging
+                    config.AddApplicationInsights(i=>i.InstrumentationKey = context.Configuration["APPINSIGHTS_INSTRUMENTATIONKEY"]);
                 })
                 .Configure<LoggerFilterOptions>(options =>
                 {
