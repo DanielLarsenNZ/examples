@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Input;
-
-namespace Examples.Pipeline.Commands
+﻿namespace Examples.Pipeline.Commands
 {
     public class CreditAccountCommand : TransactionCommand
     {
-        public Decimal CreditAmount { get; set; }
+        public decimal CreditAmount { get; set; }
 
         public override string CommandType => nameof(CreditAccountCommand);
     }

@@ -1,8 +1,6 @@
 ﻿using Examples.Pipeline.Commands;
 using Examples.Pipeline.Models;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Examples.Pipeline.Data
 {
