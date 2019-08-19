@@ -14,7 +14,7 @@ Quick examples for Azure, PowerShell and .NET.
 * [appgw-apim](./appgw-apim) - Deploy Azure App Gateway v2 WAF in front of Azure API Management.
 * [appserviceplan-scale-afd](./appserviceplan-scale-afd) - Achieve massive scale-out by deploying Azure
   Front Door in front of multiple App Service Plans.
-* [webjobs-eventhubs](./functions-minimal-bindings) - Host Functions in a WebJobs Host for better configuration
+* [webjobs-eventhubs](./webjobs-eventhubs) - Host Functions in a WebJobs Host for better configuration
   and monitoring.
 
 ## Scripts
