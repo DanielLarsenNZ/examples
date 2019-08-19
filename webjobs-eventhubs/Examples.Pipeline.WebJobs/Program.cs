@@ -32,6 +32,7 @@ namespace Examples.Pipeline.WebJobs
 
             builder.ConfigureServices(s =>
             {
+                // https://xfischer.github.io/logging-dotnet-core/
                 s.AddLogging(config =>
                 {
                     config.AddDebug(); // Log to debug (debug window in Visual Studio or any debugger attached)

@@ -1,10 +1,11 @@
 # Event Hubs on WebJobs
 
-This example shows an _Event Processor Host_ running on an _WebJobs Host_. This is an alternative to
-using the _Event Hubs Trigger_ for Functions when more configuration and monitoring of the underlying
+This solution deploys an _Event Processor Host_ running on an _WebJobs Host_, as an alternative to
+using the _Event Hubs Trigger_ for Functions, when more configuration and monitoring of the underlying
 host is desired.
 
-This example is a simple pipeline:
+Blob storage, Event Hubs, Web Jobs and a mock database are combined to build a simple Event Sourcing
+pipeline (using Event Hubs as an Event Store):
 
     Transactions file uploaded -> File parsed -> Commands serialized -> Events published to Event Hub
 
@@ -22,34 +23,34 @@ This example is a simple pipeline:
 > ./deploy.ps1
 ```
 
-The script will deploy a Resource Group into your Azure Subscription with the following resources:
+Deploys a Resource Group into your Azure Subscription with the following resources:
 
-* WebJobs Storage Account
-* Data Storage Account
+* Storage Account for WebJobs (meta data)
+* Storage Account for Data
 * Applications Insights
 * App Service Plan and Web App
 * Event Hubs namespace and Event Hub
 
-The script will package and publish the `Examples.Pipeline.WebJobs` app and configure App Settings.
-Finally the script will upload a test file to kick off the pipeline processing.
+The script also packages and publishes the `Examples.Pipeline.WebJobs` app and configures App Settings.
+Finally the script uploads a test file to kick off the pipeline processing.
 
-## Things to Note
+## Things to note
 
 * `Examples.Pipeline.WebJobs` is a .NET Core 3 Console app (packaged as a DLL). It incorporates the
-  WebJobs Host SDK which provides runtime host functionality.
-* The line `host.RunAsync();` in `Program.cs` will run continuously in an App Service instance. 
+  _WebJobs Host SDK_ which provides runtime host functionality.
+* The command `host.RunAsync()` in `Program.cs` will run continuously in an App Service instance. 
 * Each instance of the App Service will run an instance of the Host, enabling scale-out.
 * The WebJobs Host binds the Functions, Triggers and Bindings that it discovers in the library and creates
   triggers to respond to events (just like Azure Functions does, but completely self-contained).
-* Functions can be defined as Singletons.
+* Functions can be defined as Singletons. The "New File" Function operates as a Singleton.
 * _Event Processor Host_ is an intelligent client that registers clients for each partition, automatically
   scales in/out, manages checkpoints and recovers from failures.
-* The Event Hubs client library is used for sending Events for better configuration, performance and
+* The Event Hubs client library is used (instead of an output binding) for sending Events for better configuration, performance and
   monitoring. 
 
 ## Background
 
-Most Azure users will be familiar with _[Azure Functions]_ an event driven, server-less experience on
+Most Azure users will be familiar with [Azure Functions], an event driven, server-less experience on
 Azure. Functions is also an SDK and Host which can run anywhere (in a container, on your desktop, in
 your cloud). Functions is powered by the [Azure WebJobs SDK], the "core" of the Azure Functions runtime 
 and many bindings.
@@ -65,20 +66,16 @@ _This is a key difference between using the WebJobs SDK directly and using it in
 
 ## Gotchas
 
-Read [/docs/fun-with-appsettings.md](/docs/fun-with-appsettings.md)
+Read [fun-with-appsettings](/docs/fun-with-appsettings.md).
 
 Make sure `BatchCheckpointFrequency` is set to default of 1, otherwise you may wonder why some of your
 checkpoints are not being committed! (like I did for about 3 hours)
 
 ## Links and references
 
-<https://docs.microsoft.com/en-us/previous-versions/msp-n-p/jj591559(v=pandp.10)>
+### Event Hubs
 
-<https://medium.com/@jeffhollan/in-order-event-processing-with-azure-functions-bb661eb55428>
-
-<https://weblogs.asp.net/sfeldman/bend-message-deduplication-on-azure-service-bus-to-your-will>
-
-<http://microsoftintegration.guru/2016/09/20/use-azure-function-to-deduplicate-messages-on-azure-service-bus/>
+Processing 100,000 events per second on Azure Functions: <https://azure.microsoft.com/en-au/blog/processing-100-000-events-per-second-on-azure-functions/>
 
 ### Event Sourcing
 
@@ -86,9 +83,11 @@ Command and Query Responsibility Segregation (CQRS) pattern example: <https://do
 
 Event Sourcing pattern example: <https://docs.microsoft.com/en-us/azure/architecture/patterns/event-sourcing#example>
 
-<https://azure.microsoft.com/en-au/blog/processing-100-000-events-per-second-on-azure-functions/>
+### De-dupe, ordering
 
-<https://blogs.msdn.microsoft.com/kaevans/2015/02/24/scaling-azure-event-hubs-processing-with-worker-roles/>
+In order event processing with Azure Functions <https://medium.com/@jeffhollan/in-order-event-processing-with-azure-functions-bb661eb55428>
+
+Bend Message Deduplication on Azure Service Bus to Your Will: <https://weblogs.asp.net/sfeldman/bend-message-deduplication-on-azure-service-bus-to-your-will>
 
 ### Event Processor Host
 
@@ -120,17 +119,11 @@ Singleton Attribute: <https://github.com/Azure/azure-webjobs-sdk/blob/b798412ad7
 
 ### Performance settings
 
-<https://github.com/projectkudu/kudu/wiki/WebJobs#configuration-settings>
+WebJobs Configuration Settings: <https://github.com/projectkudu/kudu/wiki/WebJobs#configuration-settings>
 
 ### WebJobs Kudu
 
 Reference: <https://github.com/projectkudu/kudu/wiki/WebJobs>
 
-### AddConsole() issue
-
-<https://github.com/Azure/azure-webjobs-sdk/issues>
-
-Try compile this: <https://github.com/Azure/azure-webjobs-sdk/blob/00686a5ae3b31ca1c70b477c1ca828e4aa754340/sample/SampleHost/Program.cs>
-
-
 [WebJobs Host docs]:(https://docs.microsoft.com/en-us/azure/app-service/webjobs-sdk-how-to#webjobs-host)
+[Azure Functions]: https://github.com/Azure/Azure-Functions
