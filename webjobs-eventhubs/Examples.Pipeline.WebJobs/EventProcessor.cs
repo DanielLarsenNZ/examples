@@ -15,24 +15,26 @@ namespace Examples.Pipeline.WebJobs
 {
     public static class EventProcessor
     {
-        //private static IConfiguration _config = null;
+        /// <summary>
+        /// Receive batches of Events. Deserialize to Commands and process. 
+        /// </summary>
         [FunctionName("EventProcessor")]
         public static async Task Run(
-            [EventHubTrigger(Common.EventHubName, Connection = "EventHubConnectionString")] EventData[] messages,
+            [EventHubTrigger(Common.EventHubName, Connection = "EventHubConnectionString")] EventData[] events,
             ILogger log,
             PartitionContext partitionContext)
         {
-            log.LogInformation($"EventProcessor triggered to process {messages.Length} messages.");
+            log.LogInformation($"EventProcessor triggered to process {events.Length} messages.");
 
             // Can't get DI to work in WebJobs SDK :|
             ITransactionsCommandHandler handler = Program.Services.GetService<ITransactionsCommandHandler>();
 
-            foreach (EventData message in messages)
+            foreach (EventData eventData in events)
             {
                 // deserialise
-                string data = Encoding.UTF8.GetString(message.Body.Array, message.Body.Offset, message.Body.Count);
+                string data = Encoding.UTF8.GetString(eventData.Body.Array, eventData.Body.Offset, eventData.Body.Count);
 
-                //TODO: Don't deserialise twice
+                //TODO: Don't deserialise twice :(
                 dynamic command = JsonConvert.DeserializeObject(data);
 
                 switch (command.CommandType.ToString())

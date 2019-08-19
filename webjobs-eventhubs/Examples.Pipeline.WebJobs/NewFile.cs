@@ -21,6 +21,12 @@ namespace Examples.Pipeline.WebJobs
         private static readonly Lazy<EventHubClient> _lazyClient = new Lazy<EventHubClient>(InitializeEventHubClient);
         private static EventHubClient EventHubClient => _lazyClient.Value;
 
+        /// <summary>
+        /// Process every Transactions file that is created/modified in the Data Storage Account, 
+        /// data container. Parse each line to a Command and send to Event Hubs as batches of EventData.
+        /// </summary>
+        /// <remarks>Note that the Event Hubs output binding is not used - the client is used directly
+        /// for more control and logging.</remarks>
         [FunctionName("NewFile")]
         [Singleton]
         public static async Task Run(
@@ -28,13 +34,15 @@ namespace Examples.Pipeline.WebJobs
             string filename,
             ILogger log)
         {
-            const int MaxErrorCount = 5;
+            const int MaxErrorCount = 5;    // Maximum number of line parse errors before exception thrown
 
-            log.LogInformation($"C# Blob trigger function Processed blob\n Name:{filename} \n Size: {blob.Length} Bytes");
+            log.LogInformation($"NewFile Blob trigger function Processed blob\n Name:{filename} \n Size: {blob.Length} Bytes");
 
+            // Can't get DI to work in WebJobs SDK :|
             _config = Program.Services.GetService<IConfiguration>();
             
             // Each line in the CSV is a transaction. Create Command as Event Data for each transaction.
+            // Batches cannot be larger than 1MB so split the events into batches.
             var batches = new List<EventDataBatch>();
             batches.Add(EventHubClient.CreateBatch());
             int batchNo = 0;
@@ -72,8 +80,9 @@ namespace Examples.Pipeline.WebJobs
 
                     if (!batches[batchNo].TryAdd(new EventData(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(command)))))
                     {
-                        // batch is full
+                        // If TryAdd() fails, batch is full
                         log.LogInformation($"Batch {batchNo} is full at line {i}. Adding new batch");
+                        // Create a new batch and add event
                         batches.Add(EventHubClient.CreateBatch());
                         batchNo++;
                         if (!batches[batchNo].TryAdd(new EventData(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(command)))))
@@ -82,6 +91,7 @@ namespace Examples.Pipeline.WebJobs
                         }
                     }
 
+                    // Taking a running checksum to compare with other parts of the pipeline
                     checksum += command.Amount;
                 }
             }
@@ -105,6 +115,7 @@ namespace Examples.Pipeline.WebJobs
 
         private static TransactionCommand ParseLineToCommand(ILogger log, string filename, int lineNumber, string line)
         {
+            // id,acc_number,date_time,amount,merchant,authorization
             const int IdField = 0;
             const int AccountNumberField = 1;
             const int DateTimeField = 2;
