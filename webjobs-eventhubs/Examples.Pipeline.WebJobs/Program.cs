@@ -1,73 +1,61 @@
-﻿using Microsoft.Azure.EventHubs;
-using Microsoft.Azure.EventHubs.Processor;
-using Microsoft.Extensions.Configuration;
+﻿using Examples.Pipeline.Commands;
+using Examples.Pipeline.Data;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Azure.WebJobs.Logging;
+using Microsoft.Extensions.Logging.Console;
+using Microsoft.Extensions.Logging.Debug;
 using System;
-using System.IO;
+using System.Threading.Tasks;
 
 namespace Examples.Pipeline.WebJobs
 {
     class Program
     {
-        public static IConfiguration Configuration;
+        public static IServiceProvider Services;
 
-        static void Main()
+        static async Task Main()
         {
-            Configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-#if DEBUG
-                .AddJsonFile($"appsettings.json", optional: false, reloadOnChange: true)
-#endif
-                .AddEnvironmentVariables()
-                .Build();
-
             var builder = new HostBuilder();
 
             builder.ConfigureWebJobs(b =>
-            {    
+            {
                 b.AddAzureStorageCoreServices();
                 b.AddAzureStorage();
                 b.AddEventHubs(h =>
                 {
-                    h.BatchCheckpointFrequency = 1;
+                    h.BatchCheckpointFrequency = 1; // Checkpoint after every batch processed
                     h.EventProcessorOptions.MaxBatchSize = 100;
                     h.EventProcessorOptions.PrefetchCount = (h.EventProcessorOptions.MaxBatchSize * 2);
                 });
-            }).ConfigureLogging((context, b) =>
+            });
+
+            builder.ConfigureServices(s =>
             {
-                b.SetMinimumLevel(LogLevel.Trace);
-                //b.AddConsole() #BUG?
+                s.AddLogging(config =>
+                {
+                    config.AddDebug(); // Log to debug (debug window in Visual Studio or any debugger attached)
+                    config.AddConsole(); // Log to console (colored !)
+                })
+                .Configure<LoggerFilterOptions>(options =>
+                {
+                    options.AddFilter<DebugLoggerProvider>(null /* category*/ , LogLevel.Debug /* min level */);
+                    options.AddFilter<ConsoleLoggerProvider>(null  /* category*/ , LogLevel.Information /* min level */);
+                });
+
+                // Register services
+                s.AddSingleton<ITransactionsCommandHandler, TransactionsCommandHandler>();
+                s.AddSingleton<ITransactionsRepository, TransactionsRepository>();
             });
 
             var host = builder.Build();
+            Services = host.Services;
+
             using (host)
             {
-                host.Run();
+                // WebJobs Host will run and block here
+                await host.RunAsync();
             }
         }
-         
-        //private static EventProcessorHost InitializeEventProcessorHost()
-        //{
-        //    string eventHubConnectionString = Configuration["EventHubConnectionString"];
-        //    string storageConnectionString = Configuration["ServicesStorageConnectionString"];
-        //    const string eventHubsStorageContainer = "eventhubs";   //TODO - host/partiion specific?
-
-        //    if (string.IsNullOrEmpty(eventHubConnectionString))
-        //        throw new InvalidOperationException("App Setting EventHubConnectionString is missing.");
-
-        //    if (string.IsNullOrEmpty(storageConnectionString))
-        //        throw new InvalidOperationException("App Setting StorageConnectionString is missing.");
-
-        //    var host = new EventProcessorHost(
-        //        Common.EventHubName,
-        //        PartitionReceiver.DefaultConsumerGroupName,
-        //        eventHubConnectionString,
-        //        storageConnectionString,
-        //        eventHubsStorageContainer);
-
-        //    return host;
-        //}
     }
 }

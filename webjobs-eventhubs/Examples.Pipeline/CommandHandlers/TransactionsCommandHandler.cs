@@ -1,8 +1,4 @@
 ﻿using Examples.Pipeline.Data;
-using Examples.Pipeline.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Examples.Pipeline.Commands
@@ -11,24 +7,25 @@ namespace Examples.Pipeline.Commands
     public class TransactionsCommandHandler :
         ITransactionsCommandHandler,
         ICommandHandler<DebitAccountCommand>,
-        ICommandHandler<CreditAccountCommand> 
+        ICommandHandler<CreditAccountCommand>
     {
-        private readonly TransactionsRepository _repository = new TransactionsRepository();
+        private readonly ITransactionsRepository _repository;
 
-        public TransactionsCommandHandler()
+        public TransactionsCommandHandler(ITransactionsRepository repository)
         {
+            _repository = repository;
         }
 
         public async Task Handle(DebitAccountCommand command)
         {
             var transaction = TransactionMapper.MapToTransaction(command);
-            _repository.AddTransaction(transaction);
+            await _repository.AddTransaction(transaction);
         }
 
         public async Task Handle(CreditAccountCommand command)
         {
             var transaction = TransactionMapper.MapToTransaction(command);
-            _repository.AddTransaction(transaction);
+            await _repository.AddTransaction(transaction);
         }
     }
 }

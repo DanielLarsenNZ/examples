@@ -1,5 +1,4 @@
 using Examples.Pipeline.Commands;
-using Examples.Pipeline.Helpers;
 using Microsoft.Azure.EventHubs;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
@@ -10,13 +9,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Examples.Pipeline.WebJobs
 {
     public static class NewFile
     {
         private static IConfiguration _config = null;
-        private static ILogger _log = null;
 
         // lazy pattern for reusing client
         private static readonly Lazy<EventHubClient> _lazyClient = new Lazy<EventHubClient>(InitializeEventHubClient);
@@ -32,12 +31,9 @@ namespace Examples.Pipeline.WebJobs
             const int MaxErrorCount = 5;
 
             log.LogInformation($"C# Blob trigger function Processed blob\n Name:{filename} \n Size: {blob.Length} Bytes");
-            Logger.LogInformation($"C# Blob trigger function Processed blob\n Name:{filename} \n Size: {blob.Length} Bytes");
 
-            _log = log;
-            //_config = FunctionsHelper.GetConfig(context);
-            _config = Program.Configuration; //TODO: Yergh
-
+            _config = Program.Services.GetService<IConfiguration>();
+            
             // Each line in the CSV is a transaction. Create Command as Event Data for each transaction.
             var batches = new List<EventDataBatch>();
             batches.Add(EventHubClient.CreateBatch());
@@ -63,21 +59,21 @@ namespace Examples.Pipeline.WebJobs
                     TransactionCommand command = null;
                     try
                     {
-                        command = ParseLineToCommand(filename, i, reader.ReadLine());
+                        command = ParseLineToCommand(log, filename, i, reader.ReadLine());
                     }
                     catch (InvalidOperationException ex)
                     {
                         errorCount++;
 
-                        Logger.LogError(ex, $"errorCount = {errorCount}. {ex.Message}");
+                        log.LogError(ex, $"errorCount = {errorCount}. {ex.Message}");
 
                         if (errorCount > MaxErrorCount) throw;
                     }
 
                     if (!batches[batchNo].TryAdd(new EventData(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(command)))))
                     {
-                        Logger.LogInformation($"Batch {batchNo} is full at line {i}. Adding new batch");
                         // batch is full
+                        log.LogInformation($"Batch {batchNo} is full at line {i}. Adding new batch");
                         batches.Add(EventHubClient.CreateBatch());
                         batchNo++;
                         if (!batches[batchNo].TryAdd(new EventData(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(command)))))
@@ -94,20 +90,20 @@ namespace Examples.Pipeline.WebJobs
             // https://docs.microsoft.com/en-us/azure/event-hubs/event-hubs-dotnet-standard-getstarted-send
             int eventCount = 0;
             foreach (EventDataBatch batch in batches)
-            { 
-                Logger.LogInformation($"Sending batch of {batch.Count} events.");
+            {
+                log.LogInformation($"Sending batch of {batch.Count} events.");
                 await EventHubClient.SendAsync(batch);
                 eventCount += batch.Count;
             }
 
-            Logger.LogInformation($"Filename: {filename}");
-            Logger.LogInformation($"Lines (incl. header): {i}");
-            Logger.LogInformation($"Events: {eventCount}");
-            Logger.LogInformation($"Batches: {batches.Count}");
-            Logger.LogInformation($"Sum of amount: {checksum}");
+            log.LogInformation($"Filename: {filename}");
+            log.LogInformation($"Lines (incl. header): {i}");
+            log.LogInformation($"Events: {eventCount}");
+            log.LogInformation($"Batches: {batches.Count}");
+            log.LogInformation($"Sum of amount: {checksum}");
         }
 
-        private static TransactionCommand ParseLineToCommand(string filename, int lineNumber, string line)
+        private static TransactionCommand ParseLineToCommand(ILogger log, string filename, int lineNumber, string line)
         {
             const int IdField = 0;
             const int AccountNumberField = 1;
@@ -121,14 +117,14 @@ namespace Examples.Pipeline.WebJobs
             if (!decimal.TryParse(fields[AmountField].Replace("$", ""), out decimal amount))
             {
                 string errorMessage = $"Could not parse amount to decimal: line #{lineNumber} field #{AmountField} \"{fields[AmountField]}\"";
-                Logger.LogError(errorMessage);
+                log.LogError(errorMessage);
                 throw new InvalidOperationException(errorMessage);
             }
 
             if (!DateTime.TryParse(fields[DateTimeField], out DateTime dateTime))
             {
                 string errorMessage = $"Could not parse date_time to DateTime: line #{lineNumber} field #{DateTimeField} \"{fields[DateTimeField]}\"";
-                Logger.LogError(errorMessage);
+                log.LogError(errorMessage);
                 throw new InvalidOperationException(errorMessage);
             }
 

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Examples.Pipeline.WebJobs
+﻿namespace Examples.Pipeline.WebJobs
 {
     public class Common
     {

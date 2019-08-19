@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Examples.Pipeline.Models
 {
@@ -19,5 +17,15 @@ namespace Examples.Pipeline.Models
         public string AuthorizationCode { get; set; }
 
         public bool IsDebit { get; set; }
+
+        //[JsonIgnore]
+        public string AccountNumberLast4Digits
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(AccountNumber) || AccountNumber.Length <= 4) return AccountNumber;
+                return AccountNumber.Substring(AccountNumber.Length - 4);
+            }
+        }
     }
 }
