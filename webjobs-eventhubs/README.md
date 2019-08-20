@@ -5,11 +5,15 @@ using the _Event Hubs Trigger_ for Functions, when more configuration and monito
 host is desired.
 
 Blob storage, Event Hubs, Web Jobs and a mock database are combined to build a simple Event Sourcing
-pipeline (using Event Hubs as an Event Store):
+pipeline (using Event Hubs as an Event Store).
 
-    Transactions file uploaded -> File parsed -> Commands serialized -> Events published to Event Hub
+### Logical architecture
 
-    Events received -> Commands deserialized -> Commands processed -> Transaction and Account tables updated
+![Architecture diagram](Logical.png)
+
+### Event sourcing pipeline
+
+![Event sourcing pipeline](Event-Sourcing.png)
 
 ## Getting started
 

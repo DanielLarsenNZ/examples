@@ -16,6 +16,10 @@ $eventhubNamespace = 'webjobevents-hub'
 # Consider these settings for scale
 $planSku = 'B1'         # Scale up
 $planInstances = 2      # Scale out
+$eventhubsSku = 'Basic'
+$eventhubsRetentionDays = 1
+$eventhubsPartitions = 2    # 2 - 32. Cannot be changed after deployment. Good discussion here: https://medium.com/@iizotov/azure-functions-and-event-hubs-optimising-for-throughput-549c7acd2b75
+
 
 # Create Resource Group
 az group create -n $rg --location $location --tags $tags
@@ -59,8 +63,8 @@ az webapp deployment source config-zip -g $rg -n $app --src ./deploy.zip
 # EVENT HUBS
 # https://docs.microsoft.com/en-us/cli/azure/eventhubs?view=azure-cli-latest
 # Create Event Hub and namespace and get the key
-az eventhubs namespace create -g $rg --name $eventhubNamespace --location $location --tags $tags --sku Basic
-az eventhubs eventhub create -g $rg --namespace-name $eventhubNamespace --name 'transactions' --message-retention 1 --partition-count 2
+az eventhubs namespace create -g $rg --name $eventhubNamespace --location $location --tags $tags --sku $eventhubsSku
+az eventhubs eventhub create -g $rg --namespace-name $eventhubNamespace --name 'transactions' --message-retention $eventhubsRetentionDays --partition-count $eventhubsPartitions
 
 # Don't use RootManageSharedAccessKey in Production
 $eventHubConnectionString = ( az eventhubs namespace authorization-rule keys list -g $rg --namespace-name $eventhubNamespace --name 'RootManageSharedAccessKey' | ConvertFrom-Json ).primaryConnectionString
