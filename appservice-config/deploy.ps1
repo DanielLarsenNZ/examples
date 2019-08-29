@@ -55,6 +55,9 @@ az keyvault set-policy --name $keyvault --object-id $principalId --secret-permis
 az webapp config appsettings set -n $app -g $rg --settings "APPINSIGHTS_INSTRUMENTATIONKEY=$instrumentationKey" "AzureKeyVaultUrl=https://$keyvault.vault.azure.net/"
 
 
+start "https://$app.azurewebsites.net/health"
+start "https://$app.azurewebsites.net/configuration"
+
 
 # Tear down
 # az group delete -n $rg --yes

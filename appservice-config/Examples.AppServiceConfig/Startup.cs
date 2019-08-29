@@ -26,7 +26,7 @@ namespace Examples.AppServiceConfig
                 {
                     setup.UseAzureManagedServiceIdentity();
                     setup.UseKeyVaultUrl(Configuration[Program.AzureKeyVaultUrlAppSettingName]);
-                    setup.AddSecret("AppServiceConfig:Secret1");
+                    setup.AddSecret("AppServiceConfig--Secret1");
                 });
         }
 

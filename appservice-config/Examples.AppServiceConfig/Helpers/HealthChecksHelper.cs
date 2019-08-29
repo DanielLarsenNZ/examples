@@ -70,8 +70,12 @@ namespace Examples.AppServiceConfig.Helpers
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Description { get; set; }
+
         public TimeSpan Duration { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string ExceptionMessage { get; set; }
+
         public string Status { get; set; }
     }
 }

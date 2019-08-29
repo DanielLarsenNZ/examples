@@ -8,3 +8,6 @@ https://localhost:44303/api/numbers?key=PersonNumber
 
 ### Health checks
 https://localhost:44303/health
+
+### Azure Health checks
+https://appserviceconfig-aue.azurewebsites.net/health
