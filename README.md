@@ -16,6 +16,8 @@ Quick examples for Azure, PowerShell and .NET.
   Front Door in front of multiple App Service Plans.
 * [webjobs-eventhubs](./webjobs-eventhubs) - Host Functions in a WebJobs Host for better configuration
   and monitoring.
+* [appservices-config](./appservices-config) - Configuration in App Services using Azure Key vault.
+  Also Health checks.
 
 ## Scripts
 
