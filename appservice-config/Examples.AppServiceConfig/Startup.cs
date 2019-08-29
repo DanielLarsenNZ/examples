@@ -20,13 +20,14 @@ namespace Examples.AppServiceConfig
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
             services.AddHealthChecks()
                 .AddAzureKeyVault(setup =>
                 {
                     setup.UseAzureManagedServiceIdentity();
-                    setup.UseKeyVaultUrl(Configuration["AzureKeyVaultUrl"]);
-                    setup.AddSecret(Configuration["AzureKeyVaultSecretToCheck"]);
-                }, name: "KeyVault");
+                    setup.UseKeyVaultUrl(Configuration[Program.AzureKeyVaultUrlAppSettingName]);
+                    setup.AddSecret("AppServiceConfig:Secret1");
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
