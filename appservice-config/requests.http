@@ -9,5 +9,12 @@ https://localhost:44303/api/numbers?key=PersonNumber
 ### Health checks
 https://localhost:44303/health
 
-### Azure Health checks
+### Deployed
+### Health checks
 https://appserviceconfig-aue.azurewebsites.net/health
+
+### Numbers
+https://appserviceconfig-aue.azurewebsites.net/api/numbers
+
+### Configuration
+https://appserviceconfig-aue.azurewebsites.net/api/configuration

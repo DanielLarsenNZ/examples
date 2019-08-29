@@ -24,16 +24,20 @@ namespace Examples.AppServiceConfig.Controllers
         [HttpGet]
         public ActionResult<dynamic> Get(string key = DefaultKeyName)
         {
-            const int maxAttempts = 10;
-
             // first number shortcircuit
             if (_mockNumbersData.TryAdd(key, SeedNumber)) return Result(key, SeedNumber);
 
+            const int maxAttempts = 10;
+
+            // try and update with an incremented number up to 10 times
             for (int i = 0; i < maxAttempts; i++)
             {
                 ulong lastNumber = _mockNumbersData[key];
                 ulong newNumber = lastNumber + 1;
-                if (_mockNumbersData.TryUpdate(key, lastNumber + 1, lastNumber)) return Result(key, newNumber);
+                if (_mockNumbersData.TryUpdate(key, newNumber, lastNumber))
+                {
+                    return Result(key, newNumber);
+                }
             }
 
             return new StatusCodeResult((int)HttpStatusCode.ServiceUnavailable);

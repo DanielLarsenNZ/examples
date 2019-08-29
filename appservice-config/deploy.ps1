@@ -45,10 +45,10 @@ $principalId = ( az webapp identity assign -g $rg -n $app | ConvertFrom-Json ).p
 
 # KEY VAULT
 az keyvault create --location $location --name $keyvault -g $rg
-az keyvault secret set --vault-name $keyvault --name "AppServiceConfig--Secret1" --value New-Guid
+az keyvault secret set --vault-name $keyvault --name "AppServiceConfig--Secret1" --value 'cf59f779-c57f-4575-a1b4-ba5be8edaa28'
 
 # Grant the webapp managed identity access
-az keyvault set-policy --name $keyvault --object-id $principalId --secret-permissions get
+az keyvault set-policy --name $keyvault --object-id $principalId --secret-permissions get list
 
 
 # APP SETTINGS
@@ -56,7 +56,8 @@ az webapp config appsettings set -n $app -g $rg --settings "APPINSIGHTS_INSTRUME
 
 
 start "https://$app.azurewebsites.net/health"
-start "https://$app.azurewebsites.net/configuration"
+start "https://$app.azurewebsites.net/api/configuration"
+start "https://$app.azurewebsites.net/api/numbers"
 
 
 # Tear down
