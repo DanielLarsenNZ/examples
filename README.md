@@ -10,14 +10,14 @@ Quick examples for Azure, PowerShell and .NET.
 
 ## Solutions
 
-* [nginx-lb-appservices](./nginx-lb-appservices) - Load balance two (or more) App Services with nginx running in a Linux App Service container
-* [appgw-apim](./appgw-apim) - Deploy Azure App Gateway v2 WAF in front of Azure API Management.
-* [appserviceplan-scale-afd](./appserviceplan-scale-afd) - Achieve massive scale-out by deploying Azure
-  Front Door in front of multiple App Service Plans.
-* [webjobs-eventhubs](./webjobs-eventhubs) - Host Functions in a WebJobs Host for better configuration
+* [nginx-lb-appservices](./nginx-lb-appservices) - Load balance two (or more) **App Services** with **nginx**
+  running in a **Linux App Service** container
+* [appserviceplan-scale-afd](./appserviceplan-scale-afd) - Achieve massive scale-out by deploying **Azure Front Door**
+  in front of multiple **App Service Plans**.
+* [webjobs-eventhubs](./webjobs-eventhubs) - Host **Functions** in a **WebJobs Host** for better configuration
   and monitoring.
-* [appservices-config](./appservices-config) - Configuration in App Services using Azure Key vault.
-  Also Health checks.
+* [appservice-config](./appservice-config) - Loading **Azure Key vault** secrets into an **App Service** at
+  Startup using a **Managed Identity**. Also **Health checks**.
 
 ## Scripts
 
