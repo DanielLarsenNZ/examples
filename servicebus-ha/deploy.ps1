@@ -8,6 +8,7 @@ $rg = 'servicebusha-rg'
 $tags = 'project=servicebus-ha'
 $primaryNamespace = "servicebusha-$priLoc"
 $secondaryNamespace = "servicebusha-$secLoc"
+$alias = 'servicebusha'
 
 
 # Create Resource Group
@@ -23,7 +24,8 @@ az servicebus namespace create -g $rg -n $primaryNamespace --location $primaryLo
 # Secondary
 az servicebus namespace create -g $rg -n $secondaryNamespace --location $secondaryLocation --tags $tags --sku Premium --capacity 1
 
-
+# Set Alias and create Pair
+az servicebus georecovery-alias set -g $rg --namespace-name $primaryNamespace --alias $alias --partner-namespace $secondaryNamespace
 
 # Tear down
 # az group delete -n $rg --yes
