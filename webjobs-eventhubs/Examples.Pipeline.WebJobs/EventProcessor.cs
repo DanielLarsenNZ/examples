@@ -43,13 +43,13 @@ namespace Examples.Pipeline.WebJobs
                         command = JsonConvert.DeserializeObject<CreditAccountCommand>(data);
                         break;
                     case nameof(DebitAccountCommand):
-                        command = JsonConvert.DeserializeObject<CreditAccountCommand>(data);
+                        command = JsonConvert.DeserializeObject<DebitAccountCommand>(data);
                         break;
                     default:
                         throw new NotSupportedException($"\"{command.CommandType}\" is not a supported CommandType.");
                 }
 
-                //TODO: check for dupes
+                //TODO: check for dupes. Use comand.ComputeHash()
 
 
                 // execute the command
