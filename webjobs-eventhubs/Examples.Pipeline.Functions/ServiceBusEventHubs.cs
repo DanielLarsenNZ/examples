@@ -1,19 +1,24 @@
 using System;
+using Microsoft.Azure.EventHubs;
+using Microsoft.Azure.ServiceBus;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
 
 namespace Examples.Pipeline.Functions
 {
-    public static class Function1
+    public static class ServiceBusEventHubs
     {
-        [FunctionName("Function1")]
-        [return: EventHub("outputEventHubMessage", Connection = "EventHubConnectionAppSetting")]
-        public static void Run([ServiceBusTrigger("myqueue", Connection = "")]string myQueueItem, ILogger log)
+        [FunctionName("ServiceBusEventHubs")]
+        [return: EventHub("eventhub1", Connection = "EventHubConnectionString")]
+        public static EventData Run(
+            [ServiceBusTrigger("test2", Connection = "ServiceBusConnectionString")]Message message,
+            ILogger log,
+            string messageId)
         {
-            log.LogInformation($"C# ServiceBus queue trigger function processed message: {myQueueItem}");
+            log.LogInformation($"C# ServiceBus queue trigger function processed message: {messageId}");
 
-            //TODO: Test dependency tracking
+            return new EventData(message.Body);
         }
     }
 }

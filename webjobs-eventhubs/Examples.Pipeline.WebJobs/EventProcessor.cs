@@ -49,7 +49,7 @@ namespace Examples.Pipeline.WebJobs
                         throw new NotSupportedException($"\"{command.CommandType}\" is not a supported CommandType.");
                 }
 
-                //TODO: check for dupes. Use comand.ComputeHash()
+                //TODO: check for dupes. Use command.ComputeHash()
 
 
                 // execute the command

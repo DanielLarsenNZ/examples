@@ -1,4 +1,6 @@
-# Event Hubs on WebJobs
+# Messaging
+
+## Event Hubs on WebJobs
 
 This solution deploys an _Event Processor Host_ running on an _WebJobs Host_, as an alternative to
 using the _Event Hubs Trigger_ for Functions, when more configuration and monitoring of the underlying
@@ -15,7 +17,7 @@ pipeline (using Event Hubs as an Event Store).
 
 ![Event sourcing pipeline](Event-Sourcing.png)
 
-## Getting started
+### Getting started
 
 1. Install PowerShell
 1. Install `az` CLI
@@ -38,7 +40,7 @@ Deploys a Resource Group into your Azure Subscription with the following resourc
 The script also packages and publishes the `Examples.Pipeline.WebJobs` app and configures App Settings.
 Finally the script uploads a test file to kick off the pipeline processing.
 
-## Things to note
+### Things to note
 
 * `Examples.Pipeline.WebJobs` is a .NET Core 3 Console app (packaged as a DLL). It incorporates the
   _WebJobs Host SDK_ which provides runtime host functionality.
@@ -52,7 +54,7 @@ Finally the script uploads a test file to kick off the pipeline processing.
 * The Event Hubs client library is used (instead of an output binding) for sending Events for better configuration, performance and
   monitoring. 
 
-## Background
+### Background
 
 Most Azure users will be familiar with [Azure Functions], an event driven, server-less experience on
 Azure. Functions is also an SDK and Host which can run anywhere (in a container, on your desktop, in
@@ -68,12 +70,29 @@ _The host is a runtime container for functions. It listens for triggers and call
 
 _This is a key difference between using the WebJobs SDK directly and using it indirectly through Azure Functions. In Azure Functions, the service controls the host, and you can't customize the host by writing code. Azure Functions lets you customize host behavior through settings in the host.json file. Those settings are strings, not code, and this limits the kinds of customizations you can do._
 
-## Gotchas
+### Gotchas
 
 Read [fun-with-appsettings](/docs/fun-with-appsettings.md).
 
 Make sure `BatchCheckpointFrequency` is set to default of 1, otherwise you may wonder why some of your
-checkpoints are not being committed! (like I did for about 3 hours)
+checkpoints are not being committed! (like I did for about 3 hours).
+
+## Service Bus
+
+Service Bus has a monotonic sequence number: <https://docs.microsoft.com/en-us/azure/service-bus-messaging/service-bus-messages-payloads><br/>
+_The sequence number is a unique 64-bit integer assigned to a message as it is accepted and stored by 
+the broker and functions as its true identifier. For partitioned entities, the topmost 16 bits reflect 
+the partition identifier. Sequence numbers monotonically increase and are gapless. They roll over to 
+0 when the 48-64 bit range is exhausted. This property is read-only._
+
+You can forward Queues and Subscriptions. Forwarding topics decouples senders from receivers: <https://docs.microsoft.com/en-us/azure/service-bus-messaging/service-bus-auto-forwarding>
+
+## Functions
+
+### Gotchas
+
+You can only have one registered Service Bus listener (Connection + Queue / Subscription combination) 
+per Function host.
 
 ## Links and references
 

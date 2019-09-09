@@ -33,3 +33,9 @@ Use Managed identities for Azure resources: <https://docs.microsoft.com/en-us/as
 Health checks in ASP.NET Core: <https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks?view=aspnetcore-2.2>
 
 AspNetCore.Diagnostics.HealthChecks - `IHealthCheck` implementations for a wide range of resources: <https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks>
+
+Service Bus has a monotonic sequence number: <https://docs.microsoft.com/en-us/azure/service-bus-messaging/service-bus-messages-payloads><br/>
+_The sequence number is a unique 64-bit integer assigned to a message as it is accepted and stored by 
+the broker and functions as its true identifier. For partitioned entities, the topmost 16 bits reflect 
+the partition identifier. Sequence numbers monotonically increase and are gapless. They roll over to 
+0 when the 48-64 bit range is exhausted. This property is read-only._

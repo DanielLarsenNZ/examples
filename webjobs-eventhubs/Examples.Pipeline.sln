@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Examples.Pipeline", "Exampl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Examples.Pipeline.Functions", "Examples.Pipeline.Functions\Examples.Pipeline.Functions.csproj", "{7DCFAAD4-9953-4836-893E-0BC52560E552}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Examples.Pipeline.Tests", "Examples.Pipeline.Tests\Examples.Pipeline.Tests.csproj", "{82AED901-0B66-47BC-8A49-D2ACC65591D1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Examples.Pipeline.Tests", "Examples.Pipeline.Tests\Examples.Pipeline.Tests.csproj", "{82AED901-0B66-47BC-8A49-D2ACC65591D1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
