@@ -1,17 +1,25 @@
 # Deploy environment and code to demonstrate running Event (Hubs) Processor Host in a WebJob Host.
-# This script deploys an App Service Plan, Storage Accounts, Application Insights and an Event Hub.
+# This script deploys an App Service Plan, Storage Accounts, Application Insights, an Event Hubs Namespace
+# and Hub and a Service Bus namespace and queues.
+# It also deploys a WebJob App and a Function App.
 
 $location = 'australiaeast'
 $loc = 'aue'
 $rg = 'webjobevents-rg'
 $tags = 'project=webjobs-eventhubs'
 $plan = "webjobevents-$loc-plan"
-$app = "webjobevents-$loc"
+$webjobApp = "webjobevents-$loc"
 $webjobsStorage = "webjobevents$loc"
+$functionApp = "pipeline-$loc"
 $dataStorage = "webjobeventsdata$loc"
 $container = 'data'
 $insights = 'webjobevents-insights'
 $eventhubNamespace = 'webjobevents-hub'
+$eventhub = 'transactions'
+$eventhubAuthRule = 'SenderListener1'
+$servicebusNamespace = 'pipeline-bus'
+$queue = 'test'
+$servicebusAuthRule = 'SenderReceiver1'
 
 # Consider these settings for scale
 $planSku = 'B1'         # Scale up
@@ -19,6 +27,7 @@ $planInstances = 2      # Scale out
 $eventhubsSku = 'Basic'
 $eventhubsRetentionDays = 1
 $eventhubsPartitions = 2    # 2 - 32. Cannot be changed after deployment. Good discussion here: https://medium.com/@iizotov/azure-functions-and-event-hubs-optimising-for-throughput-549c7acd2b75
+$servicebusSku = 'Basic'
 
 
 # Create Resource Group
@@ -46,10 +55,10 @@ $instrumentationKey = ( az monitor app-insights component create --app $insights
 az appservice plan create -n $plan -g $rg --location $location --sku $planSku --number-of-workers $planInstances --tags $tags
 
 # Create WebJob app
-az webapp create -n $app --plan $plan -g $rg --tags $tags
+az webapp create -n $webjobApp --plan $plan -g $rg --tags $tags
 
 # Configure always on
-az webapp config set -n $app -g $rg --always-on true
+az webapp config set -n $webjobApp -g $rg --always-on true
 
 # Package and zip the WebJob
 dotnet publish .\Examples.Pipeline.WebJobs\ --configuration Release -o '../_zip/app_data/Jobs/Continuous/Examples.Pipeline.Webjobs'
@@ -57,21 +66,47 @@ copy ./run.cmd './_zip/app_data/Jobs/Continuous/Examples.Pipeline.Webjobs'
 Compress-Archive -Path ./_zip/* -DestinationPath ./deploy.zip -Force
 
 # Deploy source code
-az webapp deployment source config-zip -g $rg -n $app --src ./deploy.zip
+az webapp deployment source config-zip -g $rg -n $webjobApp --src ./deploy.zip
+
+# FUNCTION APP
+az functionapp create -n $functionApp --plan $plan -g $rg --tags $tags -s $webjobsStorage --app-insights $insights --app-insights-key $instrumentationKey
+
+# Configure always on
+az functionapp config set -n $functionApp -g $rg --always-on true
+
+# Package and zip the Function App
+dotnet publish .\Examples.Pipeline.Functions\ --configuration Release -o '../_functionzip'
+Compress-Archive -Path ./_functionzip/* -DestinationPath ./deployfunction.zip -Force
+
+# Deploy source code
+az functionapp deployment source config-zip -g $rg -n $functionApp --src ./deployfunction.zip
 
 
 # EVENT HUBS
 # https://docs.microsoft.com/en-us/cli/azure/eventhubs?view=azure-cli-latest
-# Create Event Hub and namespace and get the key
-az eventhubs namespace create -g $rg --name $eventhubNamespace --location $location --tags $tags --sku $eventhubsSku
-az eventhubs eventhub create -g $rg --namespace-name $eventhubNamespace --name 'transactions' --message-retention $eventhubsRetentionDays --partition-count $eventhubsPartitions
 
-# Don't use RootManageSharedAccessKey in Production
-$eventHubConnectionString = ( az eventhubs namespace authorization-rule keys list -g $rg --namespace-name $eventhubNamespace --name 'RootManageSharedAccessKey' | ConvertFrom-Json ).primaryConnectionString
+# Create Event Hub, namespace and auth rule
+az eventhubs namespace create -g $rg --name $eventhubNamespace --location $location --tags $tags --sku $eventhubsSku
+az eventhubs eventhub create -g $rg --namespace-name $eventhubNamespace --name $eventhub --message-retention $eventhubsRetentionDays --partition-count $eventhubsPartitions
+az eventhubs eventhub authorization-rule create -g $rg --namespace-name $eventhubNamespace --eventhub-name $eventhub --name $eventhubAuthRule --rights Listen Send
+
+# Get connection string
+$eventhubConnectionString = ( az eventhubs eventhub authorization-rule keys list --resource-group $rg --namespace-name $eventhubnamespace --eventhub-name $eventhub --name $eventhubauthrule | ConvertFrom-Json ).primaryConnectionString
+
+# SERVICE BUS
+# https://docs.microsoft.com/en-us/cli/azure/servicebus/namespace?view=azure-cli-latest#az-servicebus-namespace-create
+
+# Create namespace, queue and auth rule
+az servicebus namespace create -g $rg --name $servicebusNamespace --location $location --tags $tags --sku $servicebusSku
+az servicebus queue create -g $rg --namespace-name $servicebusNamespace --name $queue --default-message-time-to-live 'P14D'
+az servicebus queue authorization-rule create -g $rg --namespace-name $servicebusNamespace --queue-name $queue --name $servicebusAuthRule --rights Listen Send
+
+# Get connection string
+$servicebusConnectionString = ( az servicebus queue authorization-rule keys list -g $rg --namespace-name $servicebusNamespace --queue-name $queue --name $servicebusAuthRule | ConvertFrom-Json ).primaryConnectionString
 
 
 # APP SETTINGS
-az webapp config appsettings set -n $app -g $rg --settings "APPINSIGHTS_INSTRUMENTATIONKEY=$instrumentationKey" "AzureWebJobsStorage=$webjobsStorageConnection" "DataStorageConnectionString=$dataStorageConnection" "EventHubConnectionString=$eventHubConnectionString"
+az webapp config appsettings set -n $webjobApp -g $rg --settings "APPINSIGHTS_INSTRUMENTATIONKEY=$instrumentationKey" "AzureWebJobsStorage=$webjobsStorageConnection" "DataStorageConnectionString=$dataStorageConnection" "EventHubConnectionString=$eventhubConnectionString" "ServiceBusConnectionString=$servicebusConnectionString"
 
 # Count to 10
 Start-Sleep 10
