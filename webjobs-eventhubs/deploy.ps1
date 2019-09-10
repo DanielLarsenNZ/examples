@@ -5,25 +5,25 @@
 
 $location = 'australiaeast'
 $loc = 'aue'
-$rg = 'webjobevents-rg'
-$tags = 'project=webjobs-eventhubs'
-$plan = "webjobevents-$loc-plan"
-$webjobApp = "webjobevents-$loc"
-$webjobsStorage = "webjobevents$loc"
-$functionApp = "pipeline-$loc"
-$dataStorage = "webjobeventsdata$loc"
+$rg = 'hellomessaging-rg'
+$tags = 'project=hello-messaging'
+$plan = "hellomessaging-$loc-plan"
+$webjobApp = "hellomessaging-$loc-app"
+$webjobsStorage = "hellomessaging$loc"
+$functionApp = "hellomessaging-$loc-fn"
+$dataStorage = "hellomessagingdata$loc"
 $container = 'data'
-$insights = 'webjobevents-insights'
-$eventhubNamespace = 'webjobevents-hub'
-$eventhub = 'transactions'
+$insights = 'hellomessaging-insights'
+$eventhubNamespace = 'hellomessaging-hub'
+$eventhubs = 'transactions1', 'transactions2'
 $eventhubAuthRule = 'SenderListener1'
 $servicebusNamespace = 'pipeline-bus'
-$queue = 'test'
+$queues = 'test1', 'test2'
 $servicebusAuthRule = 'SenderReceiver1'
 
 # Consider these settings for scale
 $planSku = 'B1'         # Scale up
-$planInstances = 2      # Scale out
+$planInstances = 1      # Scale out
 $eventhubsSku = 'Basic'
 $eventhubsRetentionDays = 1
 $eventhubsPartitions = 2    # 2 - 32. Cannot be changed after deployment. Good discussion here: https://medium.com/@iizotov/azure-functions-and-event-hubs-optimising-for-throughput-549c7acd2b75
@@ -87,7 +87,11 @@ az functionapp deployment source config-zip -g $rg -n $functionApp --src ./deplo
 
 # Create Event Hub, namespace and auth rule
 az eventhubs namespace create -g $rg --name $eventhubNamespace --location $location --tags $tags --sku $eventhubsSku
-az eventhubs eventhub create -g $rg --namespace-name $eventhubNamespace --name $eventhub --message-retention $eventhubsRetentionDays --partition-count $eventhubsPartitions
+
+foreach ($eventhub in $eventhubs) {
+    az eventhubs eventhub create -g $rg --namespace-name $eventhubNamespace --name $eventhub --message-retention $eventhubsRetentionDays --partition-count $eventhubsPartitions
+}
+
 az eventhubs eventhub authorization-rule create -g $rg --namespace-name $eventhubNamespace --eventhub-name $eventhub --name $eventhubAuthRule --rights Listen Send
 
 # Get connection string
@@ -98,15 +102,22 @@ $eventhubConnectionString = ( az eventhubs eventhub authorization-rule keys list
 
 # Create namespace, queue and auth rule
 az servicebus namespace create -g $rg --name $servicebusNamespace --location $location --tags $tags --sku $servicebusSku
-az servicebus queue create -g $rg --namespace-name $servicebusNamespace --name $queue --default-message-time-to-live 'P14D'
-az servicebus queue authorization-rule create -g $rg --namespace-name $servicebusNamespace --queue-name $queue --name $servicebusAuthRule --rights Listen Send
+
+foreach ($queue in $queues) {
+    az servicebus queue create -g $rg --namespace-name $servicebusNamespace --name $queue --default-message-time-to-live 'P14D'
+}
+
+az servicebus namespace authorization-rule create -g $rg --namespace-name $servicebusNamespace --name $servicebusAuthRule --rights Listen Send
 
 # Get connection string
-$servicebusConnectionString = ( az servicebus queue authorization-rule keys list -g $rg --namespace-name $servicebusNamespace --queue-name $queue --name $servicebusAuthRule | ConvertFrom-Json ).primaryConnectionString
+$servicebusConnectionString = ( az servicebus namespace authorization-rule keys list -g $rg --namespace-name $servicebusNamespace --name $servicebusAuthRule | ConvertFrom-Json ).primaryConnectionString
 
 
 # APP SETTINGS
 az webapp config appsettings set -n $webjobApp -g $rg --settings "APPINSIGHTS_INSTRUMENTATIONKEY=$instrumentationKey" "AzureWebJobsStorage=$webjobsStorageConnection" "DataStorageConnectionString=$dataStorageConnection" "EventHubConnectionString=$eventhubConnectionString" "ServiceBusConnectionString=$servicebusConnectionString"
+
+az functionapp config appsettings set -n $functionApp -g $rg --settings "APPINSIGHTS_INSTRUMENTATIONKEY=$instrumentationKey" "AzureWebJobsStorage=$webjobsStorageConnection" "DataStorageConnectionString=$dataStorageConnection" "EventHubConnectionString=$eventhubConnectionString" "ServiceBusConnectionString=$servicebusConnectionString"
+
 
 # Count to 10
 Start-Sleep 10

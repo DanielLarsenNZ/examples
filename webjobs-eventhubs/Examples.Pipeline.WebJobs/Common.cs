@@ -2,6 +2,6 @@
 {
     public class Common
     {
-        public const string EventHubName = "transactions";
+        public const string EventHubName = "transactions1";
     }
 }

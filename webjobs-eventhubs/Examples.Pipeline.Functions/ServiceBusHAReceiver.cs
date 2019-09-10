@@ -20,7 +20,7 @@ namespace ServiceBusHA.Functions
         private static readonly Lazy<CloudTableClient> _lazyClient = new Lazy<CloudTableClient>(InitializeCloudTableClient);
         private static CloudTableClient CloudTableClient => _lazyClient.Value;
 
-        [FunctionName("ServiceBusHAReceiver")]
+        //[FunctionName("ServiceBusHAReceiver")]
         public static void Run(
             [ServiceBusTrigger("test1", Connection = "ServiceBusConnectionString")]Message message,
             ILogger log
