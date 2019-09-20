@@ -96,6 +96,8 @@ per Function host.
 
 ## Links and references
 
+App Settings in a .NET Core Console App: <https://blog.bitscry.com/2017/05/30/appsettings-json-in-net-core-console-app/>
+
 ### Event Hubs
 
 Processing 100,000 events per second on Azure Functions: <https://azure.microsoft.com/en-au/blog/processing-100-000-events-per-second-on-azure-functions/>
