@@ -1,7 +1,11 @@
-﻿using Microsoft.Azure.ServiceBus;
+﻿using Examples.Pipeline.Insights;
+using Microsoft.ApplicationInsights;
+using Microsoft.Azure.ServiceBus;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,6 +17,7 @@ namespace Examples.Pipeline.ServiceBusReceiver
         // Connection String for the namespace can be obtained from the Azure portal under the 
         // 'Shared Access policies' section.
         static IQueueClient _queueClient;
+        static TelemetryClient _insights;
 
         static async Task Main()
         {
@@ -22,6 +27,8 @@ namespace Examples.Pipeline.ServiceBusReceiver
                 //.AddEnvironmentVariables()
                 .Build();
 
+            _insights = InsightsHelper.InitializeTelemetryClient(config);
+
             _queueClient = new QueueClient(config["ServiceBusConnectionString"], config["ServiceBusReceiver.QueueName"]);
 
 
@@ -30,9 +37,12 @@ namespace Examples.Pipeline.ServiceBusReceiver
 
             Console.WriteLine($"Ready: {_queueClient}");
 
-            Console.ReadKey();
+            while (true)
+            {
+                await Task.Delay(200);
+            }
 
-            await _queueClient.CloseAsync();
+            //await _queueClient.CloseAsync();
         }
 
         static void RegisterOnMessageHandlerAndReceiveMessages(IQueueClient queueClient)
@@ -58,6 +68,9 @@ namespace Examples.Pipeline.ServiceBusReceiver
         {
             // Process the message
             Console.WriteLine($"Received message: SequenceNumber:{message.SystemProperties.SequenceNumber} Body:{Encoding.UTF8.GetString(message.Body)}");
+            var props = new Dictionary<string, string>(message.UserProperties.Select(p => new KeyValuePair<string, string>(p.Key, p.Value.ToString())));
+            props.Add(nameof(message.SystemProperties.SequenceNumber), message.SystemProperties.SequenceNumber.ToString());
+            _insights.TrackEvent("Examples.Pipeline.MessageGenerator/QueueMessageReceived", properties: props);
 
             // Complete the message so that it is not received again.
             // This can be done only if the queueClient is created in ReceiveMode.PeekLock mode (which is default).
@@ -71,6 +84,7 @@ namespace Examples.Pipeline.ServiceBusReceiver
         static Task ExceptionReceivedHandler(ExceptionReceivedEventArgs exceptionReceivedEventArgs)
         {
             Console.WriteLine($"Message handler encountered an exception {exceptionReceivedEventArgs.Exception}.");
+            _insights.TrackException(exceptionReceivedEventArgs.Exception);
             var context = exceptionReceivedEventArgs.ExceptionReceivedContext;
             Console.WriteLine("Exception context for troubleshooting:");
             Console.WriteLine($"- Endpoint: {context.Endpoint}");

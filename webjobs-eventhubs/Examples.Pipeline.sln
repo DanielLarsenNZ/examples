@@ -13,7 +13,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Examples.Pipeline.Tests", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Examples.Pipeline.MessageGenerator", "Examples.Pipeline.MessageGenerator\Examples.Pipeline.MessageGenerator.csproj", "{2A59FC2F-EC2F-4BB0-8DC0-ED8F07E66AA1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Examples.Pipeline.ServiceBusReceiver", "Examples.Pipeline.ServiceBusReceiver\Examples.Pipeline.ServiceBusReceiver.csproj", "{EE9D6D61-35C0-46A8-B921-3323B68F6032}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Examples.Pipeline.ServiceBusReceiver", "Examples.Pipeline.ServiceBusReceiver\Examples.Pipeline.ServiceBusReceiver.csproj", "{EE9D6D61-35C0-46A8-B921-3323B68F6032}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Examples.Pipeline.Insights", "Examples.Pipeline.Insights\Examples.Pipeline.Insights.csproj", "{083872AA-E9FF-4424-AD83-0C7B74A26B73}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Examples.Pipeline.NewFile", "Examples.Pipeline.NewFile\Examples.Pipeline.NewFile.csproj", "{635F60E8-14A1-4255-B651-0908122E8F71}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +49,14 @@ Global
 		{EE9D6D61-35C0-46A8-B921-3323B68F6032}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EE9D6D61-35C0-46A8-B921-3323B68F6032}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EE9D6D61-35C0-46A8-B921-3323B68F6032}.Release|Any CPU.Build.0 = Release|Any CPU
+		{083872AA-E9FF-4424-AD83-0C7B74A26B73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{083872AA-E9FF-4424-AD83-0C7B74A26B73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{083872AA-E9FF-4424-AD83-0C7B74A26B73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{083872AA-E9FF-4424-AD83-0C7B74A26B73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{635F60E8-14A1-4255-B651-0908122E8F71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{635F60E8-14A1-4255-B651-0908122E8F71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{635F60E8-14A1-4255-B651-0908122E8F71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{635F60E8-14A1-4255-B651-0908122E8F71}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

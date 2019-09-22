@@ -1,11 +1,12 @@
-﻿using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.DependencyCollector;
-using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.ApplicationInsights.Extensibility.PerfCounterCollector.QuickPulse;
+﻿using Examples.Pipeline.Insights;
+using Microsoft.ApplicationInsights;
+using Microsoft.Azure.Amqp.Framing;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,34 +22,14 @@ namespace Examples.Pipeline.MessageGenerator
                 //.AddEnvironmentVariables()
                 .Build();
 
-            var telemetryConfig = TelemetryConfiguration.CreateDefault();
-            telemetryConfig.InstrumentationKey = config["APPINSIGHTS_INSTRUMENTATIONKEY"];
-            var insights = new TelemetryClient(telemetryConfig);
-            insights.TrackTrace("Examples.Pipeline.MessageGenerator.Main");
-            var module = new DependencyTrackingTelemetryModule();
-            module.IncludeDiagnosticSourceActivities.Add("Microsoft.Azure.ServiceBus");
-            module.IncludeDiagnosticSourceActivities.Add("Microsoft.Azure.EventHubs");
-            module.Initialize(telemetryConfig);
-            telemetryConfig.TelemetryInitializers.Add(new OperationCorrelationTelemetryInitializer());
-            QuickPulseTelemetryProcessor processor = null;
-            telemetryConfig.TelemetryProcessorChainBuilder
-                .Use((next) =>
-                {
-                    processor = new QuickPulseTelemetryProcessor(next);
-                    return processor;
-                })
-                .Build();
-
-            var QuickPulse = new QuickPulseTelemetryModule();
-            QuickPulse.Initialize(telemetryConfig);
-            QuickPulse.RegisterTelemetryProcessor(processor);
+            var insights = InsightsHelper.InitializeTelemetryClient(config);
 
             int rpm = args.Length > 0 ? int.Parse(args[0]) : 60;
 
 
             var client = new QueueClient(config["ServiceBusConnectionString"], config["MessageGenerator.QueueName"]);
 
-            Console.WriteLine($"Sending messages at {rpm} RPM to queue \"{config["MessageGenerator.QueueName"]}\".");
+            Console.WriteLine($"Sending messages at ~{rpm} RPM to queue \"{config["MessageGenerator.QueueName"]}\".");
             insights.TrackTrace($"Sending messages at {rpm} RPM to queue \"{config["MessageGenerator.QueueName"]}\".");
 
             int errors = 0;
@@ -60,6 +41,7 @@ namespace Examples.Pipeline.MessageGenerator
                     // Create a new message to send to the queue.
                     string messageBody = $"Message {i}";
                     var message = new Message(Encoding.UTF8.GetBytes(messageBody));
+                    message.UserProperties.Add("MessageNumber", i);
 
                     // Write the body of the message to the console.
                     Console.WriteLine($"Sending message: {messageBody}");
@@ -67,7 +49,10 @@ namespace Examples.Pipeline.MessageGenerator
                     // Send the message to the queue.
                     await client.SendAsync(message);
 
-                    insights.TrackEvent("Examples.Pipeline.MessageGenerator/QueueMessageSent");
+                    insights.TrackEvent(
+                        "Examples.Pipeline.MessageGenerator/QueueMessageSent",
+                        new Dictionary<string, string>(
+                            message.UserProperties.Select(p => new KeyValuePair<string, string>(p.Key, p.Value.ToString()))));
                 }
                 catch (Exception exception)
                 {
