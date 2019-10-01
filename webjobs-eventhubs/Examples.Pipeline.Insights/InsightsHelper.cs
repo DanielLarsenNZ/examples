@@ -9,12 +9,15 @@ namespace Examples.Pipeline.Insights
 {
     public static class InsightsHelper
     {
-        public static TelemetryClient InitializeTelemetryClient(IConfiguration config)
+        public static TelemetryClient InitializeTelemetryClient(
+            IConfiguration config, 
+            string cloudRoleName, 
+            string cloudRoleInstance)
         {
             var telemetryConfig = TelemetryConfiguration.CreateDefault();
             telemetryConfig.InstrumentationKey = config["APPINSIGHTS_INSTRUMENTATIONKEY"];
             var insights = new TelemetryClient(telemetryConfig);
-            insights.TrackTrace("Examples.Pipeline.MessageGenerator.Main");
+            //insights.TrackTrace("Examples.Pipeline.MessageGenerator.Main");
             var module = new DependencyTrackingTelemetryModule();
             module.IncludeDiagnosticSourceActivities.Add("Microsoft.Azure.ServiceBus");
             module.IncludeDiagnosticSourceActivities.Add("Microsoft.Azure.EventHubs");
@@ -32,6 +35,9 @@ namespace Examples.Pipeline.Insights
             var QuickPulse = new QuickPulseTelemetryModule();
             QuickPulse.Initialize(telemetryConfig);
             QuickPulse.RegisterTelemetryProcessor(processor);
+
+            insights.Context.Cloud.RoleName = cloudRoleName;
+            insights.Context.Cloud.RoleInstance = cloudRoleInstance;
 
             return insights;
         }

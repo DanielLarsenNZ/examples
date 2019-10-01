@@ -27,7 +27,11 @@ namespace Examples.Pipeline.ServiceBusReceiver
                 //.AddEnvironmentVariables()
                 .Build();
 
-            _insights = InsightsHelper.InitializeTelemetryClient(config);
+            _insights = InsightsHelper.InitializeTelemetryClient(
+                config,
+                "Examples.Pipeline.ServiceBusReceiver",
+                $"cloudRoleInstance-{Environment.MachineName}"
+                );
 
             _queueClient = new QueueClient(config["ServiceBusConnectionString"], config["ServiceBusReceiver.QueueName"]);
 
@@ -52,7 +56,7 @@ namespace Examples.Pipeline.ServiceBusReceiver
             {
                 // Maximum number of Concurrent calls to the callback `ProcessMessagesAsync`, set to 1 for simplicity.
                 // Set it according to how many messages the application wants to process in parallel.
-                //MaxConcurrentCalls = 1,
+                MaxConcurrentCalls = 10,
 
                 // Indicates whether MessagePump should automatically complete the messages after returning from User Callback.
                 // False below indicates the Complete will be handled by the User Callback as in `ProcessMessagesAsync` below.

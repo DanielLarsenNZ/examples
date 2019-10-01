@@ -22,7 +22,10 @@ namespace Examples.Pipeline.MessageGenerator
                 //.AddEnvironmentVariables()
                 .Build();
 
-            var insights = InsightsHelper.InitializeTelemetryClient(config);
+            var insights = InsightsHelper.InitializeTelemetryClient(
+                config, 
+                "Examples.Pipeline.MessageGenerator",
+                $"cloudRoleInstance-{Environment.MachineName}");
 
             int rpm = args.Length > 0 ? int.Parse(args[0]) : 60;
 
