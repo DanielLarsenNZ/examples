@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Examples.Pipeline.Insights"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Examples.Pipeline.EventProcessor", "Examples.Pipeline.EventProcessor\Examples.Pipeline.EventProcessor.csproj", "{30F76C15-13DD-4288-89FC-7C3072BDF5F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Examples.Pipeline.Aggregator", "Examples.Pipeline.Aggregator\Examples.Pipeline.Aggregator.csproj", "{24B96798-4414-42B2-A5B8-10CEFBF25CF8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Examples.Pipeline.Aggregator", "Examples.Pipeline.Aggregator\Examples.Pipeline.Aggregator.csproj", "{24B96798-4414-42B2-A5B8-10CEFBF25CF8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
