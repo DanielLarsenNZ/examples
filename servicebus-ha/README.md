@@ -41,3 +41,4 @@ Best practices for insulating applications against Service Bus outages and disas
 
 Azure Service Bus Geo-disaster recovery: <https://docs.microsoft.com/en-us/azure/service-bus-messaging/service-bus-geo-dr>
 
+<https://twitter.com/clemensv/status/1182280928867098626>
