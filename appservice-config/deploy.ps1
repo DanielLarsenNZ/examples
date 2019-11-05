@@ -7,7 +7,7 @@ $tags = 'project=appservice-config'
 $plan = "appserviceconfig-$loc-plan"
 $app = "appserviceconfig-$loc"
 $insights = 'appserviceconfig-insights'
-$planSku = 'B1'         
+$planSku = 'B1'
 $planInstances = 1
 $keyvault = "appserviceconfig-$loc-kv"
 
