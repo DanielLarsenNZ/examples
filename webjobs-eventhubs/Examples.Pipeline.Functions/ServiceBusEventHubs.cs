@@ -9,7 +9,7 @@ namespace Examples.Pipeline.Functions
 {
     public static class ServiceBusEventHubs
     {
-        [FunctionName("ServiceBusEventHubs")]
+        //[FunctionName("ServiceBusEventHubs")]
         [return: EventHub("transactions2", Connection = "EventHubConnectionString")]
         public static EventData Run(
             [ServiceBusTrigger("test2", Connection = "ServiceBusConnectionString")]Message message,

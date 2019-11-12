@@ -19,7 +19,7 @@ $dataStorage = "hellomessagingdata$loc"
 $container = 'data'
 $insights = 'hellomessaging-insights'
 $eventhubNamespace = 'hellomessaging-hub'
-$eventhubs = 'transactions1', 'transactions2'
+$eventhubs = 'transactions1', 'transactions2', 'numbers'
 $eventhubAuthRule = 'SenderListener1'
 $servicebusNamespace = 'pipeline-bus'
 $queues = 'test1', 'test2'
@@ -66,26 +66,29 @@ if (!$SkipDeploy) {
     az webapp config set -n $webjobApp -g $rg --always-on true
 
     # Package and zip the WebJob
-    dotnet publish .\Examples.Pipeline.WebJobs\ --configuration Release -o '../_zip/app_data/Jobs/Continuous/Examples.Pipeline.Webjobs'
-    copy ./run.cmd './_zip/app_data/Jobs/Continuous/Examples.Pipeline.Webjobs'
-    Compress-Archive -Path ./_zip/* -DestinationPath ./deploy.zip -Force
+    #dotnet publish .\Examples.Pipeline.WebJobs\ --configuration Release -o '../_zip/app_data/Jobs/Continuous/Examples.Pipeline.Webjobs'
+    #copy ./run.cmd './_zip/app_data/Jobs/Continuous/Examples.Pipeline.Webjobs'
+    #Compress-Archive -Path ./_zip/* -DestinationPath ./deploy.zip -Force
 
     # Deploy source code
-    az webapp deployment source config-zip -g $rg -n $webjobApp --src ./deploy.zip
+    #az webapp deployment source config-zip -g $rg -n $webjobApp --src ./deploy.zip
 
     # FUNCTION APP
     az functionapp create -n $functionApp --plan $plan -g $rg --tags $tags -s $webjobsStorage --app-insights $insights --app-insights-key $instrumentationKey
 
     # Configure always on
     az functionapp config set -n $functionApp -g $rg --always-on true
-
-    # Package and zip the Function App
-    dotnet publish .\Examples.Pipeline.Functions\ --configuration Release -o '../_functionzip'
-    Compress-Archive -Path ./_functionzip/* -DestinationPath ./deployfunction.zip -Force
-
-    # Deploy source code
-    az functionapp deployment source config-zip -g $rg -n $functionApp --src ./deployfunction.zip
 }
+
+# Package and zip the Function App
+Remove-Item './_functionzip' -Recurse -Force
+New-Item './_functionzip' -ItemType Directory
+dotnet publish .\Examples.Pipeline.Functions\ --configuration Release -o './_functionzip'
+Compress-Archive -Path ./_functionzip/* -DestinationPath ./deployfunction.zip -Force
+
+# Deploy source code
+az functionapp deployment source config-zip -g $rg -n $functionApp --src ./deployfunction.zip
+
 
 # EVENT HUBS
 # https://docs.microsoft.com/en-us/cli/azure/eventhubs?view=azure-cli-latest
