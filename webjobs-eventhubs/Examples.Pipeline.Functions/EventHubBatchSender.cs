@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Examples.Pipeline.Functions
 {
-    public class EventHubSender
+    public class EventHubBatchSender
     {
         private static IConfiguration _config = null;
 
@@ -17,15 +17,20 @@ namespace Examples.Pipeline.Functions
         private static readonly Lazy<EventHubClient> _lazyClient = new Lazy<EventHubClient>(InitializeEventHubClient);
         private static EventHubClient EventHubClient => _lazyClient.Value;
 
-        private static int _i = 0;
+        //readonly TelemetryClient _telemetry;
 
-        [FunctionName("EventHubSender")]
+        //public EventHubSender(TelemetryConfiguration telemetryConfiguration)
+        //{
+        //    _telemetry = new TelemetryClient(telemetryConfiguration);
+        //}
+
+        [FunctionName("EventHubBatchSender")]
         public async Task Run(
-            [TimerTrigger("*/10 * * * * *")]TimerInfo timer,
+            [TimerTrigger("0 */1 * * * *")]TimerInfo timer,
             ILogger log,
             ExecutionContext context)
         {
-            log.LogInformation($"EventHubSender function executed at: {DateTime.Now}");
+            log.LogInformation($"EventHubBatchSender function executed at: {DateTime.Now}");
 
             _config = new ConfigurationBuilder()
                 .SetBasePath(context.FunctionAppDirectory)
@@ -33,15 +38,23 @@ namespace Examples.Pipeline.Functions
                 .AddEnvironmentVariables()
                 .Build();
 
-            _i++;
+            var batch = EventHubClient.CreateBatch();
 
-            var eventData = new EventData(
-                    Encoding.UTF8.GetBytes(
-                        JsonConvert.SerializeObject(
-                            new { Number = _i, DateTime = DateTime.UtcNow })));
+            for (int i = 1; i < 101; i++)
+            {
+                var eventData = new EventData(
+                        Encoding.UTF8.GetBytes(
+                            JsonConvert.SerializeObject(
+                                new { Number = i, DateTime = DateTime.UtcNow })));
 
-            log.LogInformation($"Sending event number {_i}.");
-            await EventHubClient.SendAsync(eventData);
+                if (!batch.TryAdd(eventData))
+                {
+                    break;
+                }
+            }
+
+            log.LogInformation($"Sending batch of {batch.Count} events.");
+            await EventHubClient.SendAsync(batch);
         }
 
         private static EventHubClient InitializeEventHubClient()
@@ -53,7 +66,7 @@ namespace Examples.Pipeline.Functions
 
             var connectionStringBuilder = new EventHubsConnectionStringBuilder(eventHubConnectionString)
             {
-                EntityPath = "numbers"
+                EntityPath = "numbers-batched"
             };
 
             return EventHubClient.CreateFromConnectionString(connectionStringBuilder.ToString());

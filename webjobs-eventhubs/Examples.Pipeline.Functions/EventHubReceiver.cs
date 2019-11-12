@@ -35,11 +35,14 @@ namespace Examples.Pipeline.Functions
                 // Replace these two lines with your processing logic.
                 log.LogInformation($"EventHubReceiver: Partition = {partitionContext.PartitionId}, Owner = {partitionContext.Owner}, message = {messageBody}");
 
-                var properties = new Dictionary<string, string>();
-                properties.Add("partitionId", partitionContext.PartitionId);
-                properties.Add("owner", partitionContext.Owner);
-                properties.Add("sequenceNumber", eventData.SystemProperties.SequenceNumber.ToString());
-                _telemetry.TrackEvent("EventHubReceiver/EventProcessed", properties: properties);
+                _telemetry.TrackEvent(
+                    "EventHubReceiver/EventProcessed", 
+                    properties: new Dictionary<string, string>
+                    {
+                        { "partitionId", partitionContext.PartitionId },
+                        { "owner", partitionContext.Owner },
+                        { "sequenceNumber", eventData.SystemProperties.SequenceNumber.ToString() }
+                    });
             }
             catch (Exception e)
             {
