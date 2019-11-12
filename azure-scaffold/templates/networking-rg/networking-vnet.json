@@ -1,0 +1,93 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vnetName": {
+      "type": "string"
+    },
+    "vnetLocation": {
+      "type": "string"
+    },
+    "vnetPrefix": {
+      "type": "string"
+    },
+    "externalSubnetName": {
+      "type": "string"
+    },
+    "externalSubnetPrefix": {
+      "type": "string"
+    },
+    "externalNsgName": {
+      "type": "string"
+    },
+    "internalSubnetName": {
+      "type": "string"
+    },
+    "internalSubnetPrefix": {
+      "type": "string"
+    },
+    "internalNsgName": {
+      "type": "string"
+    },
+    "managementSubnetName": {
+      "type": "string"
+    },
+    "managementSubnetPrefix": {
+      "type": "string"
+    },
+    "managementNsgName": {
+      "type": "string"
+    }
+  },
+  "variables": {
+  },
+  "resources": [
+    {
+      "name": "[parameters('vnetName')]",
+      "type": "Microsoft.Network/virtualNetworks",
+      "location": "[parameters('vnetLocation')]",
+      "apiVersion": "2017-06-01",
+      "tags": {
+        "displayName": "VNet"
+      },
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('vnetPrefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[parameters('externalSubnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('externalSubnetPrefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', parameters('externalNsgName'))]"
+              }
+            }
+          },
+          {
+            "name": "[parameters('internalSubnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('internalSubnetPrefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', parameters('internalNsgName'))]"
+              }
+            }
+          },
+          {
+            "name": "[parameters('managementSubnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('managementSubnetPrefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', parameters('managementNsgName'))]"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "outputs": {
+  }
+}

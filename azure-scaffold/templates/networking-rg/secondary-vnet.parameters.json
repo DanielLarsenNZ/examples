@@ -1,0 +1,42 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vnetName": {
+      "value": "secondary-ase-vnet"
+    },
+    "vnetLocation": {
+      "value": "australiasoutheast"
+    },
+    "vnetPrefix": {
+      "value": "10.10.128.0/18"
+    },
+    "externalSubnetName": {
+      "value": "external"
+    },
+    "externalSubnetPrefix": {
+      "value": "10.10.144.0/20"
+    },
+    "externalNsgName": {
+      "value": "external-nsg"
+    },
+    "internalSubnetName": {
+      "value": "internal"
+    },
+    "internalSubnetPrefix": {
+      "value": "10.10.160.0/20"
+    },
+    "internalNsgName": {
+      "value": "internal-nsg"
+    },
+    "managementSubnetName": {
+      "value": "management"
+    },
+    "managementSubnetPrefix": {
+      "value": "10.10.128.0/20"
+    },
+    "managementNsgName": {
+      "value": "management-nsg"
+    }
+  }
+}
