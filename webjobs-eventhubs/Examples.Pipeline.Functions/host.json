@@ -7,5 +7,5 @@
       }
     }
   },
-  "functions": [ "EventHubSender", "EventHubReceiver", "EventHubBatchSender", "EventHubBatchReceiver" ]
+  "functions": [ "EventHubSender", "EventHubReceiver", "EventHubBatchSender", "EventHubBatchReceiver", "EventHubBatchBindingReceiver", "EventHubBatchBindingSender" ]
 }

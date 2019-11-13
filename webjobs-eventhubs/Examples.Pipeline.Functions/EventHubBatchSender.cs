@@ -17,13 +17,6 @@ namespace Examples.Pipeline.Functions
         private static readonly Lazy<EventHubClient> _lazyClient = new Lazy<EventHubClient>(InitializeEventHubClient);
         private static EventHubClient EventHubClient => _lazyClient.Value;
 
-        //readonly TelemetryClient _telemetry;
-
-        //public EventHubSender(TelemetryConfiguration telemetryConfiguration)
-        //{
-        //    _telemetry = new TelemetryClient(telemetryConfiguration);
-        //}
-
         [FunctionName("EventHubBatchSender")]
         public async Task Run(
             [TimerTrigger("0 */1 * * * *")]TimerInfo timer,
