@@ -5,7 +5,21 @@
       "messageHandlerOptions": {
         "autoComplete": true
       }
-    }
+    },
+    "eventHubs": {
+      "eventProcessorOptions": {
+        "maxBatchSize": 100,
+        "prefetchCount": 200
+      }
+    }    
   },
-  "functions": [ "EventHubSender", "EventHubReceiver", "EventHubBatchSender", "EventHubBatchReceiver", "EventHubBatchBindingReceiver", "EventHubBatchBindingSender" ]
+  "functions": [
+    //"EventHubSender",
+    //"EventHubReceiver",
+    //"EventHubBatchSender",
+    //"EventHubBatchReceiver",
+    "EventHubBatchBindingReceiver",
+    "EventHubBatchBindingReceiver2",
+    "EventHubBatchBindingSender"
+  ]
 }

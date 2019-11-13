@@ -4,7 +4,6 @@ using Microsoft.Azure.EventHubs;
 using Microsoft.Azure.EventHubs.Processor;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,23 +12,22 @@ using System.Threading.Tasks;
 
 namespace Examples.Pipeline.Functions
 {
-    public class EventHubBatchBindingReceiver
+    public class EventHubBatchBindingReceiver2
     {
         readonly TelemetryClient _telemetry;
 
-        public EventHubBatchBindingReceiver(TelemetryConfiguration telemetryConfiguration)
+        public EventHubBatchBindingReceiver2(TelemetryConfiguration telemetryConfiguration)
         {
             _telemetry = new TelemetryClient(telemetryConfiguration);
         }
 
-        [FunctionName("EventHubBatchBindingReceiver")]
+        [FunctionName("EventHubBatchBindingReceiver2")]
         public async Task Run(
-            [EventHubTrigger("numbers-batched-binding", Connection = "EventHubConnectionString")] EventData[] events,
+            [EventHubTrigger("numbers-batched-binding-2", Connection = "EventHubConnectionString")] EventData[] events,
             ILogger log,
-            PartitionContext partitionContext,
-            [EventHub("numbers-batched-binding-2", Connection = "EventHubConnectionString")]IAsyncCollector<EventData> outputEvents)
+            PartitionContext partitionContext)
         {
-            log.LogInformation($"EventHubBatchBindingReceiver: Batch count = {events.Length}, Partition = {partitionContext.PartitionId}, Owner = {partitionContext.Owner}");
+            log.LogInformation($"EventHubBatchBindingReceiver2: Batch count = {events.Length}, Partition = {partitionContext.PartitionId}, Owner = {partitionContext.Owner}");
 
             var exceptions = new List<Exception>();
 
@@ -40,10 +38,10 @@ namespace Examples.Pipeline.Functions
                     string messageBody = Encoding.UTF8.GetString(eventData.Body.Array, eventData.Body.Offset, eventData.Body.Count);
 
                     // Replace these two lines with your processing logic.
-                    log.LogInformation($"EventHubBatchBindingReceiver: message = {messageBody}");
+                    log.LogInformation($"EventHubBatchBindingReceiver2: message = {messageBody}");
 
                     _telemetry.TrackEvent(
-                        "EventHubBatchBindingReceiver/EventProcessed",
+                        "EventHubBatchBindingReceiver2/EventProcessed",
                         properties: new Dictionary<string, string>
                         {
                             { "partitionId", partitionContext.PartitionId },
@@ -51,9 +49,7 @@ namespace Examples.Pipeline.Functions
                             { "sequenceNumber", eventData.SystemProperties.SequenceNumber.ToString() }
                         });
 
-                    // send processed message to next hub
-                    var newEventData = new EventData(Encoding.UTF8.GetBytes(messageBody));
-                    await outputEvents.AddAsync(newEventData);
+                    await Task.Yield();
                 }
                 catch (Exception e)
                 {
