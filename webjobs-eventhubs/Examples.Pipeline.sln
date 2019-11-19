@@ -31,8 +31,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Functions", "Functions", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{CAE6525C-2350-488A-A450-D0AE7FE48483}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Examples.Pipeline.ServiceBusFunctions", "Examples.Pipeline.ServiceBusFunctions\Examples.Pipeline.ServiceBusFunctions.csproj", "{78E66612-0D26-4F75-A24D-8C6344EAB526}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
