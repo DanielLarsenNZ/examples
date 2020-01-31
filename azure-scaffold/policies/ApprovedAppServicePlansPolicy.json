@@ -1,0 +1,24 @@
+// Only allow B1-B3, S1-S3, P1-P3
+{
+  "if": {
+    "allOf": [
+      {
+        "field": "type",
+        "equals": "Microsoft.Web/serverfarms"
+      },
+      {
+        "not": {
+          "allof": [
+            {
+              "field": "Microsoft.Web/serverfarms/sku.name",
+              "in": "[parameters('listOfSkus')]"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "then": {
+    "effect": "deny"
+  }
+}

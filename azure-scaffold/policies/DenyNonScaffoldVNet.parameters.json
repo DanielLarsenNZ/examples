@@ -1,0 +1,9 @@
+{
+    "listOfNames": {
+        "type": "array",
+        "metadata": {
+            "description": "List of Names",
+            "displayName": "Names"
+        }
+    }
+}

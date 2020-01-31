@@ -1,0 +1,18 @@
+// audit B3, S3, P3
+{
+  "if": {
+    "allOf": [
+      {
+        "field": "type",
+        "equals": "Microsoft.Web/serverfarms"
+      },
+      {
+          "field": "Microsoft.Web/serverfarms/sku.name",
+          "in": "[parameters('listOfSkus')]"
+        }
+    ]
+  },
+  "then": {
+    "effect": "audit"
+  }
+}

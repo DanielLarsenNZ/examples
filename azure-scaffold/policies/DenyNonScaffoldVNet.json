@@ -1,0 +1,20 @@
+// Deny deployment of non-scaffold vnets
+{
+    "if": {
+        "allOf": [
+            {
+                "field": "type",
+                "equals": "Microsoft.Network/virtualNetworks"
+            },
+            {
+                "not": {
+                    "field": "name",
+                    "in": "[parameters('listOfNames')]"
+                }
+            }
+        ]
+    },
+    "then": {
+        "effect": "deny"
+    }
+}

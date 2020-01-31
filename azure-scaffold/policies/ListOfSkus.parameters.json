@@ -1,0 +1,9 @@
+{
+    "listOfSkus": {
+        "type": "array",
+        "metadata": {
+            "description": "List of SKUs",
+            "displayName": "SKUs"
+        }
+    }
+}

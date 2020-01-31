@@ -14,7 +14,7 @@ Quick examples for Azure, PowerShell and .NET.
   running in a **Linux App Service** container
 * [appserviceplan-scale-afd](./appserviceplan-scale-afd) - Achieve massive scale-out by deploying **Azure Front Door**
   in front of multiple **App Service Plans**.
-* [webjobs-eventhubs](./webjobs-eventhubs) - Host **Functions** in a **WebJobs Host** for better configuration
+* [webjobs-eventhubs](https://github.com/DanielLarsenNZ/messaging) - Host **Functions** in a **WebJobs Host** for better configuration
   and monitoring.
 * [appservice-config](./appservice-config) - Loading **Azure Key vault** secrets into an **App Service** at
   Startup using a **Managed Identity**. Also **Health checks**.

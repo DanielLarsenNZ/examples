@@ -1,1 +1,0 @@
-dotnet Examples.Pipeline.WebJobs.dll %*
