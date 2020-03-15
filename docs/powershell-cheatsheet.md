@@ -465,4 +465,8 @@ start powershell
 start powershell -WorkingDirectory c:\r
 ```
 
+## More cheatsheets
+
+PowerShell equivalents for common Linux/bash commands: <https://mathieubuisson.github.io/powershell-linux-bash/>
+
 [other ways too]:https://blogs.technet.microsoft.com/uktechnet/2016/06/20/parallel-processing-with-powershell/
