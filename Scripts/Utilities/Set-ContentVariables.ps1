@@ -40,7 +40,7 @@ function Set-ContentVariables {
                 if ($null -ne $Variables[$varname])
                 {
                     $content = $content.Replace($match.Value, $Variables[$varname])
-                    Write-Verbose "Replaced $($match.Value) with variable value '$((Get-Item env:$varname).Value)'"
+                    Write-Verbose "Replaced $($match.Value) with variable value '$Variables[$varname]'"
                 }
                 else 
                 {
