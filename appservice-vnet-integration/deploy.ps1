@@ -10,3 +10,5 @@ $ErrorActionPreference = 'Stop'
 
 New-AzResourceGroup -Name $rg -Location $location -Tag $tags -Force -Verbose
 New-AzResourceGroupDeployment -ResourceGroupName $rg -Mode 'Incremental' -TemplateFile (Join-Path $PSScriptRoot './armdeploy.json') -Verbose
+
+start 'https://hellovnet.azurewebsites.net/'

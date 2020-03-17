@@ -1,25 +1,20 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
-    "parameters":
-    {
-        "appservice":
-        {
+    "parameters": {
+        "appservice": {
             "defaultValue": "hellovnet",
             "type": "String"
         },
-        "appserviceplan":
-        {
+        "appserviceplan": {
             "defaultValue": "hellovnet-plan",
             "type": "String"
         },
-        "vnet":
-        {
+        "vnet": {
             "defaultValue": "hellovnet-vnet",
             "type": "String"
         },
-        "appserviceplanSku":
-        {
+        "appserviceplanSku": {
             "defaultValue": {
                 "name": "S1",
                 "tier": "Standard",
@@ -30,31 +25,33 @@
             "type": "object"
         }
     },
-    "variables": {},
-    "resources":
-    [
+    "variables": {
+    },
+    "resources": [
         {
             "type": "Microsoft.Network/virtualNetworks",
             "apiVersion": "2019-11-01",
             "name": "[parameters('vnet')]",
             "location": "[resourceGroup().location]",
-            "properties":
-            {
-                "addressSpace":
-                {
-                    "addressPrefixes":
-                    [
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
                         "10.0.0.0/16"
                     ]
                 },
-                "subnets":
-                [
+                "subnets": [
                     {
                         "name": "default",
-                        "properties":
-                        {
+                        "properties": {
                             "addressPrefix": "10.0.0.0/24",
-                            "delegations": [{"name":"delegation","properties":{"serviceName":"Microsoft.Web/serverfarms"}}]
+                            "delegations": [
+                                {
+                                    "name": "delegation",
+                                    "properties": {
+                                        "serviceName": "Microsoft.Web/serverfarms"
+                                    }
+                                }
+                            ]
                         }
                     }
                 ]
@@ -64,19 +61,15 @@
             "type": "Microsoft.Network/virtualNetworks/subnets",
             "apiVersion": "2019-11-01",
             "name": "[concat(parameters('vnet'), '/default')]",
-            "dependsOn":
-            [
+            "dependsOn": [
                 "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnet'))]"
             ],
-            "properties":
-            {
+            "properties": {
                 "addressPrefix": "10.0.0.0/24",
-                "delegations":
-                [
+                "delegations": [
                     {
                         "name": "delegation",
-                        "properties":
-                        {
+                        "properties": {
                             "serviceName": "Microsoft.Web/serverfarms"
                         }
                     }
@@ -99,8 +92,7 @@
             "properties": {
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appserviceplan'))]"
             },
-            "dependsOn":
-            [
+            "dependsOn": [
                 "[resourceId('Microsoft.Web/serverfarms', parameters('appserviceplan'))]"
             ],
             "kind": "app"
@@ -109,14 +101,29 @@
             "name": "[concat(parameters('appservice'),'/virtualNetwork')]",
             "type": "Microsoft.Web/sites/networkConfig",
             "apiVersion": "2018-02-01",
-            "properties":
-            {
+            "properties": {
                 "subnetResourceId": "[concat(resourceGroup().id,'/providers/Microsoft.Network/virtualNetworks/', parameters('vnet'), '/subnets/default')]",
                 "swiftSupported": true
             },
-            "dependsOn":[
+            "dependsOn": [
                 "[resourceId('Microsoft.Web/sites', parameters('appservice'))]"
             ]
+        },
+        {
+            "apiVersion": "2018-02-01",
+            "name": "[concat(parameters('appservice'),'/web')]",
+            "type": "Microsoft.Web/sites/sourcecontrols",
+            "tags": {
+                "displayName": "Deploy source code"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/Sites', parameters('appservice'))]"
+            ],
+            "properties": {
+                "RepoUrl": "https://github.com/DanielLarsenNZ/HelloAspDotNetCore",
+                "branch": "master",
+                "IsManualIntegration": true
+            }
         }
     ]
 }
