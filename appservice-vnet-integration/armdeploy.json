@@ -41,7 +41,7 @@
                 },
                 "subnets": [
                     {
-                        "name": "default",
+                        "name": "web",
                         "properties": {
                             "addressPrefix": "10.0.0.0/24",
                             "delegations": [
@@ -60,7 +60,7 @@
         {
             "type": "Microsoft.Network/virtualNetworks/subnets",
             "apiVersion": "2019-11-01",
-            "name": "[concat(parameters('vnet'), '/default')]",
+            "name": "[concat(parameters('vnet'), '/web')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnet'))]"
             ],
@@ -102,7 +102,7 @@
             "type": "Microsoft.Web/sites/networkConfig",
             "apiVersion": "2018-02-01",
             "properties": {
-                "subnetResourceId": "[concat(resourceGroup().id,'/providers/Microsoft.Network/virtualNetworks/', parameters('vnet'), '/subnets/default')]",
+                "subnetResourceId": "[concat(resourceGroup().id,'/providers/Microsoft.Network/virtualNetworks/', parameters('vnet'), '/subnets/web')]",
                 "swiftSupported": true
             },
             "dependsOn": [
