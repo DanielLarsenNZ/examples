@@ -1,0 +1,122 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters":
+    {
+        "appservice":
+        {
+            "defaultValue": "hellovnet",
+            "type": "String"
+        },
+        "appserviceplan":
+        {
+            "defaultValue": "hellovnet-plan",
+            "type": "String"
+        },
+        "vnet":
+        {
+            "defaultValue": "hellovnet-vnet",
+            "type": "String"
+        },
+        "appserviceplanSku":
+        {
+            "defaultValue": {
+                "name": "S1",
+                "tier": "Standard",
+                "size": "S1",
+                "family": "S",
+                "capacity": 1
+            },
+            "type": "object"
+        }
+    },
+    "variables": {},
+    "resources":
+    [
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2019-11-01",
+            "name": "[parameters('vnet')]",
+            "location": "[resourceGroup().location]",
+            "properties":
+            {
+                "addressSpace":
+                {
+                    "addressPrefixes":
+                    [
+                        "10.0.0.0/16"
+                    ]
+                },
+                "subnets":
+                [
+                    {
+                        "name": "default",
+                        "properties":
+                        {
+                            "addressPrefix": "10.0.0.0/24",
+                            "delegations": [{"name":"delegation","properties":{"serviceName":"Microsoft.Web/serverfarms"}}]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "apiVersion": "2019-11-01",
+            "name": "[concat(parameters('vnet'), '/default')]",
+            "dependsOn":
+            [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnet'))]"
+            ],
+            "properties":
+            {
+                "addressPrefix": "10.0.0.0/24",
+                "delegations":
+                [
+                    {
+                        "name": "delegation",
+                        "properties":
+                        {
+                            "serviceName": "Microsoft.Web/serverfarms"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2018-02-01",
+            "name": "[parameters('appserviceplan')]",
+            "location": "[resourceGroup().location]",
+            "sku": "[parameters('appserviceplanSku')]",
+            "kind": "app"
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2018-11-01",
+            "name": "[parameters('appservice')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appserviceplan'))]"
+            },
+            "dependsOn":
+            [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('appserviceplan'))]"
+            ],
+            "kind": "app"
+        },
+        {
+            "name": "[concat(parameters('appservice'),'/virtualNetwork')]",
+            "type": "Microsoft.Web/sites/networkConfig",
+            "apiVersion": "2018-02-01",
+            "properties":
+            {
+                "subnetResourceId": "[concat(resourceGroup().id,'/providers/Microsoft.Network/virtualNetworks/', parameters('vnet'), '/subnets/default')]",
+                "swiftSupported": true
+            },
+            "dependsOn":[
+                "[resourceId('Microsoft.Web/sites', parameters('appservice'))]"
+            ]
+        }
+    ]
+}
