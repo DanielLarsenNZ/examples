@@ -16,16 +16,17 @@ $ErrorActionPreference = 'Stop'
 New-AzResourceGroup -Name $rg -Location $location -Tag $tags -Verbose -Force
 
 # https://docs.microsoft.com/en-us/powershell/module/az.rediscache/New-AzRedisCache?view=azps-3.6.1
-#New-AzRedisCache -ResourceGroupName $rg -Name $redis -Location $location -Size 'C4' -Sku 'Standard' -Verbose
+New-AzRedisCache -ResourceGroupName $rg -Name $redis -Location $location -Size 'C4' -Sku 'Standard' -Verbose
 
 Get-AzRedisCache -ResourceGroupName $rg -Name $redis
 
 Get-AzRedisCacheKey -ResourceGroupName $rg -Name $redis
 
 
-#New-AzRedisCache -ResourceGroupName $rg -Name $redis2 -Location $location -Size 'P1' -Sku 'Premium' -Verbose
+New-AzRedisCache -ResourceGroupName $rg -Name $redis2 -Location $location -Size 'P1' -Sku 'Premium' -Verbose
 
 Get-AzRedisCache -ResourceGroupName $rg -Name $redis2
 
 Get-AzRedisCacheKey -ResourceGroupName $rg -Name $redis2
 
+Remove-AzResourceGroup -Name $rg -Force
