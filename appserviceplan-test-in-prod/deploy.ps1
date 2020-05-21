@@ -13,7 +13,7 @@ $loaderioKey = 'loaderio-f59cd4c712e8ef80df0c056f2dea0a2d'   # loader.io load te
 az group create -n $rg --location $location --tags $tags
 
 # Create App Service Plan
-az appservice plan create -n $plan -g $rg --location $location --sku S1 --number-of-workers 5 --tags $tags
+az appservice plan create -n $plan -g $rg --location $location --sku S1 --number-of-workers 1 --tags $tags
 
 # Create App, deploy from Github
 az webapp create -n $app --plan $plan -g $rg --tags $tags `
