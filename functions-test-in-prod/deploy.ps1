@@ -7,7 +7,7 @@ $plan = "testinprodfn-$loc-plan"
 $tags = 'project=functions-test-in-prod'
 $app = "testinprodfn-$loc"
 $insights = 'testinprod-insights'
-$loaderioKey = 'loaderio-f59cd4c712e8ef80df0c056f2dea0a2d'   # loader.io load testing validation key
+$loaderioKey = 'loaderio-7c9c75ad834888c3d34f1ec9145ad6a5'   # loader.io load testing validation key
 $storage = "testinprodfn$loc"
 $repo = 'https://github.com/DanielLarsenNZ/HelloFunctionsDotNetCore.git'
 
@@ -34,12 +34,14 @@ az functionapp create -n $app -g $rg --tags $tags --storage-account $storage --p
     --deployment-source-url $repo `
     --app-insights $insights --app-insights-key $instrumentationKey
 
-az functionapp config appsettings set -n $app -g $rg --settings "APPINSIGHTS_INSTRUMENTATIONKEY=$instrumentationKey" `
-    "loader.io=$loaderioKey" --slot-settings "Colour=Green"
+az functionapp config appsettings set -n $app -g $rg `
+    --settings "APPINSIGHTS_INSTRUMENTATIONKEY=$instrumentationKey" "loader.io=$loaderioKey" `
+    --slot-settings "Colour=Green"
 
 # Create a blue slot
 az functionapp deployment slot create -n $app -g $rg --slot 'blue'
-az functionapp config appsettings set -n $app -g $rg --slot 'blue' --settings "APPINSIGHTS_INSTRUMENTATIONKEY=$instrumentationKey" "loader.io=$loaderioKey" `
+az functionapp config appsettings set -n $app -g $rg --slot 'blue' `
+    --settings "APPINSIGHTS_INSTRUMENTATIONKEY=$instrumentationKey" "loader.io=$loaderioKey" `
     --slot-settings "Colour=Blue"
 az functionapp deployment source config -n $app -g $rg --slot 'blue' --repo-url $repo
 
