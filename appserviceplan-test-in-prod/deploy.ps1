@@ -7,31 +7,38 @@ $plan = "testinprod-$loc-plan"
 $tags = 'project=appserviceplan-test-in-prod'
 $app = "testinprod-$loc"
 $insights = 'testinprod-insights'
+#$appConfig = "testinprod-$loc-config"
 $loaderioKey = 'loaderio-f59cd4c712e8ef80df0c056f2dea0a2d'   # loader.io load testing validation key
 
-# Create resource group
+# RESOURCE GROUP
 az group create -n $rg --location $location --tags $tags
 
-# Create App Service Plan
-az appservice plan create -n $plan -g $rg --location $location --sku S1 --number-of-workers 1 --tags $tags
+# APP CONFIG
+#$appConfigUrl = (az appconfig create -n $appConfig --location $location -g $rg --sku 'free' --query endpoint -o tsv)
+#$appConfigConnectionString = (az appconfig credential list -g $rg -n $appConfig --query "[?name=='Primary Read Only'] .connectionString" -o tsv)
 
-# Create App, deploy from Github
-az webapp create -n $app --plan $plan -g $rg --tags $tags `
-    --deployment-source-url 'https://github.com/DanielLarsenNZ/HelloAspDotNetCore'
-
-# Turn off ARR
-az webapp update -n $app -g $rg --client-affinity-enabled false
-
-# Create an Application Insights instance and set the Instrumentation Key on both plans
+# APPLICATION INSIGHTS
 az extension add -n application-insights
 
 #  https://docs.microsoft.com/en-us/cli/azure/ext/application-insights/monitor/app-insights/component?view=azure-cli-latest
 $instrumentationKey = ( az monitor app-insights component create --app $insights --location $location -g $rg --tags $tags | ConvertFrom-Json ).instrumentationKey
+
+# APP SERVICE PLAN
+az appservice plan create -n $plan -g $rg --location $location --sku S1 --number-of-workers 1 --tags $tags
+
+# WEB APP
+az webapp create -n $app --plan $plan -g $rg --tags $tags 
+az webapp deployment source config -n $app -g $rg --repo-url 'https://github.com/DanielLarsenNZ/HelloAspDotNetCore'
+
+# Turn off ARR
+az webapp update -n $app -g $rg --client-affinity-enabled false
+
+# Config app settings
 #  https://docs.microsoft.com/en-us/cli/azure/webapp/config/appsettings?view=azure-cli-latest#az-webapp-config-appsettings-set
 az webapp config appsettings set -n $app -g $rg --settings "APPINSIGHTS_INSTRUMENTATIONKEY=$instrumentationKey" "loader.io=$loaderioKey" `
     --slot-settings "Colour=Green"
 
-# Create a blue slot
+# DEPLOYMENT SLOT
 az webapp deployment slot create -n $app -g $rg --slot 'blue'
 az webapp config appsettings set -n $app -g $rg --slot 'blue' --settings "APPINSIGHTS_INSTRUMENTATIONKEY=$instrumentationKey" "loader.io=$loaderioKey" `
     --slot-settings "Colour=Blue"

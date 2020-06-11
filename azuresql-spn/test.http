@@ -1,0 +1,4 @@
+POST https://eshopmodernizing-sql.database.windows.net:1443/databases/eshopmodernizing-db/query?api-version=2018-08-01-preview&application=Azure%20SQL%20Query%20Editor
+Authorization: Bearer XXXX
+
+SELECT @@VERSION
