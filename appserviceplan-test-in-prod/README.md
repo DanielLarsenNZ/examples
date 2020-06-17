@@ -33,6 +33,9 @@ There are three deployment scripts to choose from:
 ./deploy.ps1
 ```
 
+Once the script has completed, if you log in to the portal you will find an App Service deployed with
+production and "blue" slots and 80/20 traffic routing.
+
 ![Azure Portal App Service > Deployment Slots showing 80/20 traffic routing](./images/traffic.jpg)
 
 ### Create a Load test
