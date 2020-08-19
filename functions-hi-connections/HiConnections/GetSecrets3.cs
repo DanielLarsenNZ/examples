@@ -1,17 +1,16 @@
-using System;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;
-using static Microsoft.Azure.KeyVault.KeyVaultClient;
+using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading.Tasks;
+using static Microsoft.Azure.KeyVault.KeyVaultClient;
 
 namespace HiConnections
 {
@@ -48,10 +47,7 @@ namespace HiConnections
             }
 
             await Task.WhenAll(tasks);
-
-            if (_errorBag.Any()) throw new AggregateException(_errorBag);
-
-            return new JsonResult(_bag.ToArray());
+            return GetSecretsHelper.ActionResult(_bag, _errorBag);
         }
 
         private async Task Decrypt(string cipherText)
