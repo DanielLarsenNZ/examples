@@ -11,26 +11,29 @@ using System.Linq;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;
 using static Microsoft.Azure.KeyVault.KeyVaultClient;
+using System.Net.Http;
 
 namespace HiConnections
 {
-    public class GetSecrets2
+    public class GetSecrets3
     {
         private readonly KeyVaultCrypto _crypto;
         private readonly ConcurrentBag<string> _bag = new ConcurrentBag<string>();
         private readonly ConcurrentBag<Exception> _errorBag = new ConcurrentBag<Exception>();
         private readonly int _decryptLoopCount = 30;
+        private static HttpClient _http = new HttpClient();
         private static readonly KeyVaultClient _keyVaultClient =
-            new KeyVaultClient(
-                new AuthenticationCallback(new AzureServiceTokenProvider().KeyVaultTokenCallback));
+            new KeyVaultClient(new AuthenticationCallback(
+                new AzureServiceTokenProvider().KeyVaultTokenCallback),
+                _http);
 
-        public GetSecrets2()
+        public GetSecrets3()
         {
             if (int.TryParse(Environment.GetEnvironmentVariable("DecryptLoopCount"), out int count)) _decryptLoopCount = count;
             _crypto = new KeyVaultCrypto(_keyVaultClient, "https://helloase-aue-kv.vault.azure.net/keys/key1");
         }
 
-        [FunctionName("GetSecrets2")]
+        [FunctionName("GetSecrets3")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
             ILogger log)

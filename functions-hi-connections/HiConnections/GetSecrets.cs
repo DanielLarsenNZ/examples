@@ -8,12 +8,15 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Azure.KeyVault;
+using static Microsoft.Azure.KeyVault.KeyVaultClient;
+using Microsoft.Azure.Services.AppAuthentication;
 
 namespace HiConnections
 {
+
     public class GetSecrets
     {
-        //private readonly KeyVaultCrypto _crypto;
         private readonly ConcurrentBag<string> _bag = new ConcurrentBag<string>();
         private readonly ConcurrentBag<Exception> _errorBag = new ConcurrentBag<Exception>();
         private readonly int _decryptLoopCount = 30;
@@ -21,7 +24,6 @@ namespace HiConnections
         public GetSecrets()
         {
             if (int.TryParse(Environment.GetEnvironmentVariable("DecryptLoopCount"), out int count)) _decryptLoopCount = count;
-            //_crypto = KeyVaultCrypto.NewInstance();
         }
 
         [FunctionName("GetSecrets")]
@@ -47,9 +49,12 @@ namespace HiConnections
 
         private async Task Decrypt(string cipherText)
         {
+            var keyVaultClient = new KeyVaultClient(
+                new AuthenticationCallback(new AzureServiceTokenProvider().KeyVaultTokenCallback));
+            var crypto = new KeyVaultCrypto(keyVaultClient, "https://helloase-aue-kv.vault.azure.net/keys/key1");
             try
             {
-                _bag.Add(await KeyVaultCrypto.NewInstance().DecryptAsync(cipherText));
+                _bag.Add(await crypto.DecryptAsync(cipherText));
             }
             catch (Exception ex)
             {

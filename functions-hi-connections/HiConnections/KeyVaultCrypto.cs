@@ -4,8 +4,6 @@ using System;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using static Microsoft.Azure.KeyVault.KeyVaultClient;
-using Microsoft.Azure.Services.AppAuthentication;
 
 // I ❤ K. Scott Allen https://odetocode.com/blogs/scott/archive/2018/03/08/decryption-with-azure-key-vault.aspx
 
@@ -49,13 +47,6 @@ namespace HiConnections
                 var encodedText = Convert.ToBase64String(encryptedText);
                 return encodedText;
             }
-        }
-
-        public static KeyVaultCrypto NewInstance()
-        {
-            var keyVaultClient = new KeyVaultClient(
-                new AuthenticationCallback(new AzureServiceTokenProvider().KeyVaultTokenCallback));
-            return new KeyVaultCrypto(keyVaultClient, "https://helloase-aue-kv.vault.azure.net/keys/key1");
         }
     }
 }
