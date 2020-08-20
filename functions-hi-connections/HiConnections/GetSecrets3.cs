@@ -27,6 +27,9 @@ namespace HiConnections
             _crypto = new KeyVaultCrypto(_keyVaultClient, Environment.GetEnvironmentVariable("KeyId"));
         }
 
+        /// <summary>
+        /// This version uses static KeyVaultClient with static HttpClient
+        /// </summary>
         [FunctionName("GetSecrets3")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,

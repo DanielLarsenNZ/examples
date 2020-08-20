@@ -25,6 +25,9 @@ namespace HiConnections
         {
         }
 
+        /// <summary>
+        /// This version news up a KeyVaultClient for every decryption
+        /// </summary>
         [FunctionName("GetSecrets")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
