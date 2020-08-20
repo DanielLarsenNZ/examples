@@ -1,0 +1,10 @@
+{
+    "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "APPINSIGHTS_INSTRUMENTATIONKEY": "",
+    "DecryptLoopCount": 30,
+    "KeyId": "https://(key-vault-name).vault.azure.net/keys/key1"
+  }
+}

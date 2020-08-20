@@ -3,6 +3,7 @@ using Microsoft.Azure.KeyVault.WebKey;
 using System;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 // I ❤ K. Scott Allen https://odetocode.com/blogs/scott/archive/2018/03/08/decryption-with-azure-key-vault.aspx
@@ -23,8 +24,10 @@ namespace HiConnections
         public async Task<string> DecryptAsync(string encryptedText)
         {
             var encryptedBytes = Convert.FromBase64String(encryptedText);
-            var decryptionResult = await client.DecryptAsync(keyId,
-                                     JsonWebKeyEncryptionAlgorithm.RSAOAEP, encryptedBytes);
+            var decryptionResult = await client.DecryptAsync(
+                keyId,
+                JsonWebKeyEncryptionAlgorithm.RSAOAEP, 
+                encryptedBytes);
             var decryptedText = Encoding.Unicode.GetString(decryptionResult.Result);
             return decryptedText;
         }
