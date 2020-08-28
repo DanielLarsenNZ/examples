@@ -1,3 +1,4 @@
+using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,8 +15,9 @@ namespace HiConnections
 {
     public class GetSecrets : Secrets
     {
-        public GetSecrets(TelemetryConfiguration telemetryConfiguration) : base(telemetryConfiguration)
+        public GetSecrets(TelemetryConfiguration telemetryConfiguration)
         {
+            _telemetry = new TelemetryClient(telemetryConfiguration);
         }
 
         /// <summary>
@@ -32,9 +34,10 @@ namespace HiConnections
 
         protected override KeyVaultCrypto GetCrypto()
         {
-            return new KeyVaultCrypto(new KeyVaultClient(
-                new AuthenticationCallback(new AzureServiceTokenProvider().KeyVaultTokenCallback)),
-                Environment.GetEnvironmentVariable("KeyId"));
+            return new KeyVaultCrypto(
+                new KeyVaultClient(new AuthenticationCallback(new AzureServiceTokenProvider().KeyVaultTokenCallback)),
+                Environment.GetEnvironmentVariable("KeyId"),
+                _telemetry);
         }
     }
 }

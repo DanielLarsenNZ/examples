@@ -1,3 +1,4 @@
+using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,9 +20,10 @@ namespace HiConnections
             new KeyVaultClient(new AuthenticationCallback(
                 new AzureServiceTokenProvider().KeyVaultTokenCallback));
 
-        public GetSecrets2(TelemetryConfiguration telemetryConfiguration) : base(telemetryConfiguration)
+        public GetSecrets2(TelemetryConfiguration telemetryConfiguration)
         {
-            _crypto = new KeyVaultCrypto(_keyVaultClient, Environment.GetEnvironmentVariable("KeyId"));
+            _telemetry = new TelemetryClient(telemetryConfiguration);
+            _crypto = new KeyVaultCrypto(_keyVaultClient, Environment.GetEnvironmentVariable("KeyId"), _telemetry);
         }
 
         /// <summary>

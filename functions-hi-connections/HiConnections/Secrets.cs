@@ -1,5 +1,4 @@
 ﻿using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Rest;
@@ -16,12 +15,10 @@ namespace HiConnections
         protected readonly ConcurrentBag<string> _bag = new ConcurrentBag<string>();
         protected readonly ConcurrentBag<Exception> _errorBag = new ConcurrentBag<Exception>();
         private readonly int _decryptLoopCount = 30;
-        protected readonly TelemetryClient _telemetry;
+        protected TelemetryClient _telemetry;
 
-        protected Secrets(TelemetryConfiguration telemetryConfiguration)
+        protected Secrets()
         {
-            _telemetry = new TelemetryClient(telemetryConfiguration);
-
             // Decrypt loop count can be overidden by App Setting "DecryptLoopCount"
             if (int.TryParse(Environment.GetEnvironmentVariable("DecryptLoopCount"), out int count)) _decryptLoopCount = count;
         }
@@ -50,7 +47,7 @@ namespace HiConnections
         {
             // Group exceptions by Type
             var errorsGrouped = errorBag.GroupBy(e => e.GetType());
-            
+
             // Log first exception of each type
             foreach (var ex in errorsGrouped) _telemetry.TrackException(ex.First());
 
@@ -86,7 +83,7 @@ namespace HiConnections
             }
             catch (Exception ex)
             {
-                _telemetry.TrackException(ex);
+                _telemetry?.TrackException(ex);
             }
 
             return ActionResult(_bag, _errorBag);
