@@ -4,8 +4,8 @@ Customers want the convenience of a fully managed hosting platform at cloud-scal
 Plans beyond the Premium SKU limit of 30 instances has been problematic in the past. Azure Traffic Manager 
 (a DNS Load Balancer) is unable to distinguish between separate App Service Plans in the same region. 
 
-These problems are resolved with a new service called Azure Front Door, a global HTTP load-balancer
-service used by Microsoft services including Xbox, Skype, Bing, Office 365 and Azure DevOps. With Front 
+These problems are resolved with **[Azure Front Door]**, a global HTTP load-balancer
+service used by Microsoft first-party services including Xbox, Skype, Bing, Office 365 and Azure DevOps. With Front 
 Door a single frontend can scale to 3,000 instances of a P3v2 plan, as well as many additional benefits 
 including:
 
@@ -15,12 +15,12 @@ including:
 1. On a Premium Service Plan, a single front-end can theoretically scale in/out from 0 to 3,000 instances
    (100 backends (plans) per pool x 30 instances each). That's up to 12,000 cores of compute available
    to the front end.
-1. You can more evenly balance across the plans, due to the speed of HTTP load balancing (vs DNS), reducing
+1. You can balance more evenly across the plans, due to the speed of HTTP load balancing (vs DNS), reducing
    overprovisioning
-1. SSL offload can be performed at the Front Door, reducing CPU load on the App Service Plans and improving
-   density
+1. Custom SSL certs can be installed on the Front Door, allowing traffic to be encrypted and then re-encrypted
+   if required using custom or Microsoft managed certs
 1. Client connection times and response times are dramatically improved as clients connect to the nearest
-   POP Node (129 POP nodes across 65 metros) and then Anycast across Microsoft’s Global Fibre Network
+   POP Node (130 POP nodes across 82 metros) and then Anycast across Microsoft’s Global Fibre Network
 1. Front Door can load-balance and route across any combination of HTTP backend including App Services,
    Cloud Services, AKS and Functions
 1. No code or other infrastructure changes are required. This is a drop-in replacement for Traffic Manager. 
@@ -39,6 +39,10 @@ To deploy Azure Front Door + App Service Plans using az CLI and PowerShell:
 
 ## More information and resources
 
-* Front Door pricing: <https://azure.microsoft.com/en-us/pricing/details/frontdoor/>
+* [How to access control Azure Front Door IPs and Headers](/docs/enforce-xafdid.md)
 * Front Door overview: <https://docs.microsoft.com/en-us/azure/frontdoor/front-door-overview>
+* Front Door pricing: <https://azure.microsoft.com/en-us/pricing/details/frontdoor/>
 * Sample deployment script: [./deploy.ps1](./deploy.ps1)
+
+
+[Azure Front Door]:https://azure.microsoft.com/en-us/services/frontdoor/
