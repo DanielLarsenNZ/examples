@@ -1,6 +1,17 @@
 # App-init, Health-check, Auto-heal... oh my!
 
-This article is about the App-init and Health-check features in Azure App Services. There is a good overview of these features in this blog by the App Services team: [The Ultimate Guide to Running Healthy Apps in the Cloud].
+This article is about how to configure App-init and Health-check features in Azure App Services to ensure that a cold instance does not receive production traffic. There is a good overview of these features in [The Ultimate Guide to Running Healthy Apps in the Cloud].
+
+## TL;DR
+
+* App Startup should block until the app and it's dependencies are warm. This is the only way (I have found) to ensure a cold instance does not receive load.
+* If the first request to a cold instance responds with _any_ status (including 500) it will start to recieve production traffic
+* Health checks will _eventually_ but not immediately remove an unhealthy instance from production
+* Implementing an `IStartupFilter` is the proper way to warm up an app and its dependencies
+* In Premium Functions you can use the new [Warmup trigger]
+* In Dedicated and ASE Function you can roll your own warmup Function
+
+## Overview
 
 In my experience, the only way to prevent an App Service (Web App or Function App) from being put into production (by the App Services load balancer) until it is ready, is to configure **Application Initialization**. Just configuring a health-check by itself won't guarantee the app won't receive production traffic.
 
@@ -10,11 +21,11 @@ The best way to understand what is going on is to turn on App Service **Diagnost
 
 Then run a Load test on the App Service while it is scaling up. I point <https://loader.io> at my PoC app and manually scale-up, in this case from 1 to 3 instances. Note that my PoC app has a **30 seconds artificial startup delay** implemented as an instance of `IStartupFilter`. This startup filter will **block the first request to the application** until th filter has completed.
 
-## My PoC environment
+### My PoC environment
 
 I used a slightly modified version of this script: [appserviceplan-test-in-prod/deploy.ps1](/.appserviceplan-test-in-prod/deploy.ps1)
 
-## Synchronously blocking startup with `IStartupFilter`
+### Synchronously blocking startup with `IStartupFilter`
 
 > 📖 [Exploring IStartupFilter in ASP.NET Core]. 
 
@@ -79,3 +90,4 @@ My personal advice is to not mess with the Auto-heal defaults except in exceptio
 
 [The Ultimate Guide to Running Healthy Apps in the Cloud]:https://azure.github.io/AppService/2020/05/15/Robust-Apps-for-the-cloud.html
 [Exploring IStartupFilter in ASP.NET Core]:https://andrewlock.net/exploring-istartupfilter-in-asp-net-core/
+[Warmup trigger]:https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-warmup?tabs=csharp
