@@ -17,7 +17,7 @@ In my experience, the only way to prevent an App Service (Web App or Function Ap
 
 ### My PoC environment
 
-I used a slightly modified version of this script: [appserviceplan-test-in-prod/deploy.ps1](/.appserviceplan-test-in-prod/deploy.ps1)
+I used a slightly modified version of this script: [appserviceplan-test-in-prod/deploy.ps1](/appserviceplan-test-in-prod/deploy.ps1)
 
 * The Production slot receives 100% of traffic
 * Health-check is set to `'/'`
