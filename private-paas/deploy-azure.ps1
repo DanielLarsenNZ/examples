@@ -26,7 +26,7 @@ $storageConnection = "$storage-connection"
 $storageDnsLink = "$storage-dnslink"
 $storageZoneGroup = "$storage-zonegroup"
 
-$apim = "helloprivate-$loc-apim"
+$apim = "helloprivate-apim"
 $apimSubnet = 'apim'
 
 ## ADDRESS SCHEMA

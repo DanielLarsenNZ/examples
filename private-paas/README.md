@@ -1,11 +1,12 @@
-# Magical "Private" PaaS
+# "Private" PaaS
 
-## Issues
+## Things to be aware of
 
 ### App Service Plan
+
 1. In an App Service Plan, "private" traffic that originates in a Web App will take a different route (Regional VNet Integration) to inbound private traffic (Private Endpoint)
 1. App Service Plan Regional VNet Integration DNS resolution is magic. DNS server is configured using an App Setting. `System.Net.Dns.GetHostAddresses()` will resolve Azure public IPs no matter what. Only `nameresolver.exe` will resolve private IPs of a lookup (to Azure Private DNS Zone for example).
-1. Azure Blob Storage Private Endpoint does not work with Regional VNet Integration. A Service Endpoint must be used. A Service Endpoints are magic.
+1. Azure Blob Storage Private Endpoint does not work with Regional VNet Integration. A Service Endpoint must be used. Service Endpoints are magic.
 1. App Service Plan Regional VNet Integration requires an [empty and exclusive /26 subnet](https://docs.microsoft.com/en-us/azure/app-service/web-sites-integrate-with-vnet#azure-dns-private-zones#:~:text=A%20%2F26%20with%2064%20addresses%20accommodates%20a%20Premium%20plan%20with%2030%20instances) (for a Premium ASP to scale to 30 instances).
 
 ### Azure Application Gateway
@@ -23,14 +24,26 @@
 1. Private endpoints require split-horizon DNS: reconstruction of public DNS records in a private zone for connections to work. 
 1. In App Services, a web app with a private endpoint configured is still accessible via its public IP (it responds with 403).
 
-## Recommendations
-
-1. App Service plan
-
-
 ## You will need
 
 1. Your own DNS Server and management processes
 1. To place as much trust in Azure SDN as you do when you trust our public network infrastructure
 
-## How a customer expects it to work
+## Links and references
+
+> <http://helloprivate-aue.australiaeast.cloudapp.azure.com/>
+
+> <https://helloprivate-aue.azurewebsites.net/>
+
+* <https://docs.microsoft.com/en-us/azure/service-bus-messaging/network-security#private-endpoints>
+* Reza's Private Function <https://github.com/RezaMahmood/privatefunction>
+* <https://docs.microsoft.com/en-us/azure/app-service/web-sites-integrate-with-vnet>
+* <https://docs.microsoft.com/en-us/azure/storage/common/storage-network-security#change-the-default-network-access-rule>
+* <https://docs.microsoft.com/en-us/azure/private-link/private-endpoint-dns>
+* <https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-name-resolution-for-vms-and-role-instances>
+* <https://docs.microsoft.com/en-us/azure/storage/common/storage-private-endpoints>
+* <https://docs.microsoft.com/en-us/azure/app-service/scripts/cli-deploy-privateendpoint>
+* <https://docs.microsoft.com/en-us/azure/service-bus-messaging/service-bus-service-endpoints>
+* <https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-service-endpoints-overview>
+* <https://docs.microsoft.com/en-us/azure/service-bus-messaging/network-security#private-endpoints>
+* <https://docs.microsoft.com/en-us/azure/api-management/api-management-using-with-vnet>
