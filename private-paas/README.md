@@ -1,4 +1,14 @@
-# "Private" PaaS
+# Private PaaS
+
+> 👷🏻‍♀️🚧👷🏻‍♂️ WIP
+
+Azure Platform as a Service (PaaS) is a unique offering in the Cloud Services market. Azure PaaS services like App Services, Application Gateway, API Management, Azure SQL DB and so on provide a fully managed platform service where Microsoft is taking responsibility for every layer of the stack except the Application layer. 
+
+The public endpoints provisioned for Azure PaaS services, on the so called "Azure Edge", are secure internet gateways (SIG's), in place to defend the Azure Platform from attack and, by proxy, customer workloads. 
+
+The firewalls, DDOS protection and Network infrastructure deployed are at industrial scale; only a handful of vendors globally can afford to deploy and maintain this level of infrastructure. Microsoft is reported to spend more than a billion US dollars on Cloud Infrastructure each month. To put this in perspective for New Zealand readers, that's equivalent to spending the entire budget for the Waterview Tunnel project every month<sup>1</sup>.
+
+By the time HTTP traffic arrives at the entry point of your application it as already been scrubbed, DDOS'ed, and encrypted in transit. 
 
 ## Things to be aware of
 
@@ -17,7 +27,7 @@
 
 1. APIM requires an exclusive subnet (can be shared by other APIM instances)
 1. APIM requires [2 IPs per instance (Premium SKU)](https://docs.microsoft.com/en-us/azure/api-management/api-management-using-with-vnet#--subnet-size-requirement). Max of 10 instances would require 20 + 5 IPs or a /27.
-1. APIM requires outbound traffic access to multuple PaaS services (fair enough) including Storage, SQL, Event Hubs. [This traffic will be routed in the public address space](https://docs.microsoft.com/en-us/azure/api-management/api-management-using-with-vnet#-common-network-configuration-issues).
+1. APIM requires outbound traffic access to multiple PaaS services (fair enough) including Storage, SQL, Event Hubs. [There are several other requirements](https://docs.microsoft.com/en-us/azure/api-management/api-management-using-with-vnet#-common-network-configuration-issues).
 
 ### Private endpoints
 
