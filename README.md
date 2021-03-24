@@ -1,5 +1,3 @@
-> #BlackLivesMatter ✊🏾✊🏿✊🏽
-
 # Examples
 
 Quick examples for Azure, PowerShell and .NET.
@@ -7,7 +5,7 @@ Quick examples for Azure, PowerShell and .NET.
 ## docs
 
 * [powershell-cheatsheet.md](./docs/powershell-cheatsheet.md) - A PowerShell cheatsheet.
-* [Verify Azure Functions host in Loader.io](./docs/verify-loader-azure-functions.md)
+* [Fun with Functions Proxies](./docs/fun-with-functions-proxies.md)
 * [Fun with App Settings in a WebJobs Host on .NET Core](./docs/fun-with-appsettings.md)
 
 ## Solutions
