@@ -11,7 +11,7 @@ $appgwSubnet = "appgws"
 
 $app = "helloprivate-$loc"
 $plan = "helloprivate-$loc-plan"
-$planEndpoint = "$plan-endpoint"5
+$planEndpoint = "$plan-endpoint"
 $planConnection = "$plan-connection"
 $planZone = "$app.azurewebsites.net"
 $planDnsLink = "$plan-dnslink"

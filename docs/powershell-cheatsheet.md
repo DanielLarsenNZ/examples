@@ -206,26 +206,22 @@ In PowerShell 4 there is a ForEach method on a Collection.
 
 ## ForEach parallel
 
-You can for-each parallel inside a `workflow`. There are [other ways too].
+This changed in PowerShell 7.
 
 ```powershell
-workflow TestEndpoints {
     param (
         [string] $BaseUrl
     )
     
-    ForEach -Parallel ($path in ("/health", "/parts", "/orders", "/dispatches", "/users")) {  
-        $response = Invoke-WebRequest -Method Get -Uri "$($BaseUrl)$($path)" -UseBasicParsing
+    "/health", "/parts", "/orders", "/dispatches", "/users" | ForEach -Parallel {  
+        $response = Invoke-WebRequest -Method Get -Uri "$($using:BaseUrl)$($_)" -UseBasicParsing
         $body = ConvertFrom-Json $response.Content
         
         Write-Output "GET $($path): HTTP Status = $($response.StatusCode), version = $($body.version)"
     }
-}
-
-TestEndpoints -BaseUrl 'http://localtest.me/api/'
 ```
 
-> 📖 https://docs.microsoft.com/en-us/powershell/module/psworkflow/about/about_foreach-parallel?view=powershell-5.1
+> 📖 https://devblogs.microsoft.com/powershell/powershell-foreach-object-parallel-feature/
 
 ## `switch`
 
