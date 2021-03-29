@@ -117,7 +117,7 @@ $a.AddRange(("four", "five", "six"))
 
 ```
 
-> Adding/removing items from an Array: <http://www.jonathanmedd.net/2014/01/adding-and-removing-items-from-a-powershell-array.html>
+> Everything you wanted to know about arrays: <https://docs.microsoft.com/en-us/powershell/scripting/learn/deep-dives/everything-about-arrays?view=powershell-7.1>
 
 > Get-ChildItem in PowerShell: <http://www.kanasolution.com/2010/12/get-childitem-in-powershell/>
 
@@ -282,6 +282,23 @@ Get-Random --Maximum 255
 ```
 
 ## Custom objects
+
+Better than Hash Tables!
+
+Add properties to PSObjects that will be formatted nicely
+
+```powershell
+$result = New-Object -TypeName PSObject
+$result | Add-Member -Name Command -MemberType NoteProperty -Value 'GetGroup' 
+$result | Add-Member -Name DurationSeconds -MemberType NoteProperty -Value 1.01
+
+$result | Format-Table
+
+# Output:
+Command  DurationSeconds
+-------  ---------------
+GetGroup            1.01
+```
 
 Add behaviour (methods) to custom objects:
 
