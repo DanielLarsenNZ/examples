@@ -121,7 +121,7 @@ $a.AddRange(("four", "five", "six"))
 
 > Get-ChildItem in PowerShell: <http://www.kanasolution.com/2010/12/get-childitem-in-powershell/>
 
-## for
+## For loops
 
 Simple.
 
@@ -154,7 +154,7 @@ for (($i = 0), ($j = 0); $i -lt 10 -and $j -lt 10; ($i++), ($j++))
 
 > 📖 https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_for?view=powershell-6
 
-## foreach
+## For-each loops
 
 Some traps for young players here... `ForEach-Object` and `foreach()` are different.
 
@@ -223,7 +223,7 @@ This changed in PowerShell 7.
 
 > 📖 https://devblogs.microsoft.com/powershell/powershell-foreach-object-parallel-feature/
 
-## `switch`
+## Switch statements
 
 `switch` is _amazing_ in PowerShell.
 
@@ -251,7 +251,7 @@ You can also do Regex on case matches...
 
 > <https://msdn.microsoft.com/en-us/powershell/reference/5.1/microsoft.powershell.core/about/about_switch>
 
-## map
+## Map
 
 `%` is shorthand for `foreach` so you can map quite elegantly like this:
 
@@ -274,7 +274,7 @@ $rg = if ($Prod) { 'scaffold-prod-rg' } else { 'scaffold-nonprod-rg' }
 
 ## Get-Random
 
-Best named cmdlet ever!
+Best named cmdlet ever! 😂
 
 ```powershell
 # Generate a random number between 0 - 255
@@ -313,6 +313,14 @@ $mockProxy | Add-Member -Name ListChildren -MemberType ScriptMethod `
 
 As of PowerShell 5 you can use a PowerShell `class` to create objects in a similar
 way as in C#: <https://trevorsullivan.net/2014/10/25/implementing-a-net-class-in-powershell-v5/>
+
+## Files
+
+Write the output of any command to a File
+
+```powershell
+Get-Process | Out-File -Path ./processes.txt
+```
 
 ## .NET interop
 
