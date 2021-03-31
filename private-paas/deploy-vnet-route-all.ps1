@@ -8,26 +8,14 @@ $vnet = "hellovnetrouteall-$loc-vnet"
 $planSubnet = 'asp'
 $nsg = 'deny-all-internet-out'
 
-# Create resource group
+# RESOURCE GROUP
 az group create -n $rg --location $location --tags $tags
 
-# Create App Service Plan
-az appservice plan create -n $plan -g $rg --location $location --sku S1 --tags $tags
 
-# Create App and deploy test app from Github
-az webapp create -n $app --plan $plan -g $rg --tags $tags `
-    --deployment-source-url 'https://github.com/DanielLarsenNZ/HelloAspDotNetCore'
-
-# Create a VNet
+# VNET
 az network vnet create -n $vnet -g $rg --location $location --subnet-name $planSubnet --tags $tags
 
-# APP SERVICE PLAN Regional VNET Integration
-az webapp vnet-integration add --name $app -g $rg --subnet $planSubnet --vnet $vnet
-
-# Set Website VNET Route all and configure app to try to connect to Dropbox.com
-az webapp config appsettings set -n $app -g $rg --settings "WEBSITE_VNET_ROUTE_ALL=1" "GetUrls=https://www.dropbox.com/"
-
-# Create an NSG to deny all internet outbound
+# NSG: deny all internet outbound
 az network nsg create -g $rg -n $nsg --tags $tags
 az network nsg rule create -g $rg --nsg-name $nsg -n 'DenyInternetOutbound' --priority 100 `
     --direction 'Outbound' --source-address-prefixes '*' --source-port-ranges '*' `
@@ -36,6 +24,25 @@ az network nsg rule create -g $rg --nsg-name $nsg -n 'DenyInternetOutbound' --pr
 
 # Assign to subnet
 az network vnet subnet update -g $rg -n $planSubnet --vnet-name $vnet --network-security-group $nsg
+
+
+# APP SERVICE PLAN
+az appservice plan create -n $plan -g $rg --location $location --sku S1 --tags $tags
+
+# Create App and deploy test app from Github
+az webapp create -n $app --plan $plan -g $rg --tags $tags `
+    --deployment-source-url 'https://github.com/DanielLarsenNZ/HelloAspDotNetCore'
+
+# Deploy ARM to set vnetRouteAll (instead of using the WEBSITE_VNET_ROUTE_ALL=1 App Setting)
+az deployment group create -n "deployment-$(New-Guid)" -g $rg --template-file ./arm-vnet-route-all-deploy-all-enabled.json --mode Incremental `
+    --parameters appName=$app appServicePlanName=$plan location=$location
+
+# VNET Integration
+az webapp vnet-integration add --name $app -g $rg --subnet $planSubnet --vnet $vnet
+
+# Configure app to try to connect to Dropbox.com
+az webapp config appsettings set -n $app -g $rg --settings "GetUrls=https://www.dropbox.com/"
+
 
 # Open the app in the browser
 start "https://$app.azurewebsites.net"
