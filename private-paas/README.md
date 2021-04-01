@@ -1,16 +1,36 @@
-# Private PaaS
+# Private PaaS - Private networking features in Azure platform services
 
 > 👷🏻‍♀️🚧👷🏻‍♂️ WIP
 
+> ℹ My name is Daniel Larsen. I work for Microsoft. Opinions are my own.
+
 Azure Platform as a Service (PaaS) is a unique offering in the Cloud Services market. Azure PaaS services like App Services, Application Gateway, API Management, Azure SQL DB and so on provide a fully managed platform service where Microsoft is taking responsibility for every layer of the stack except the Application layer. 
+
+## Networking at industrial scale
 
 The public endpoints provisioned for Azure PaaS services, on the so called "Azure Edge", are secure internet gateways (SIG's), in place to defend the Azure Platform from attack and, by proxy, customer workloads. 
 
-The firewalls, DDOS protection and Network infrastructure deployed are at industrial scale; only a handful of vendors globally can afford to deploy and maintain this level of infrastructure. Microsoft is reported to spend more than a billion US dollars on Cloud Infrastructure each month. To put this in perspective for New Zealand readers, that's equivalent to spending the entire budget for the Waterview Tunnel project every month<sup>1</sup>.
+The firewalls, DDOS protection and Network infrastructure deployed are at industrial scale; only a handful of vendors globally have the resources to deploy and maintain this level of infrastructure. Microsoft was reported to spend more than a billion US dollars on Cloud infrastructure each month<sup>1</sup>. To put this in perspective for New Zealand readers, that's equivalent to spending the entire budget for the Waterview Tunnel project every month<sup>2</sup>.
 
-By the time HTTP traffic arrives at the entry point of your application it as already been scrubbed, DDOS'ed, and encrypted in transit. 
+Microsoft operates one of the largest global networks on the planet. Once traffic enters our network it stays on it until the last possible hop. Traffic between Azure services, even in different regions, is never routed across the public Internet<sup>3</sup>. By the time HTTP/S traffic arrives at the entry point of your application it as already been scrubbed, DDOS'ed, and encrypted in transit (at multiple layers).
 
-## Things to be aware of
+## Azure networking is different
+
+Microsoft has built an incredible global networking service by reinventing networking. We have embraced software defined networking, zero trust and defense in depth, and developed entirely new technologies to achieve this at phenomenal scale. Sometimes the biggest challenge for customers coming to Azure from other Clouds, or from their own networking infrastructure, is to grasp just how different networking is in the Azure Cloud. Our traditional mental models of through devices, physical networking infrastructure, point to point connections - even IP addressing will evaporate into thin air the first time you get to experience a walk through an Azure Datacentre, which are different to any others on the planet. 
+
+These differences are also reflected in our approach to networking features in Azure PaaS services, which is what the remainder of this article is about. One way to think of private networking features in PaaS is that they are an abstraction; we present an API that looks and behaves like layer 4 networking to help users understand the features and match them to their requirements. However the story "under the hood" is much different.
+
+## Requirements, requirements, requirements
+
+If I was to sum up the Azure approcah to Cloud Architecture in one statement it would be "Business requirements first". We recommend architects and engineers start with business requirements first which can be easier said than done. Also as architects and engineers we are prone to "solutioning" without really consulting the business. Or to reaching for the most gold-plated solution in the assumption it will be the best for the business. These behaviours, that may have gone un-noticed in the on-premises IT world of upfront capital expenditure and sunk cost can be problematic in the modern cloud world. In other words, architects that learn to truly understand business requirement and then simply map them to platform features in Azure are the most successful in my experience<sup>*</sup>.
+
+With that said, let's look at the networking features in Azure and how they may meet your business's requirements.
+
+> <sup>*</sup> This left-to-right mapping of requirements works well for several classes of features in Azure including Networking, Security, High availability, Disaster recovery, Cost-optimisation & Performance (and more). John Downs and I talk about this at length in the [FastTrack for Azure Live] series on Cloud Architecture.
+
+## Networking features in Azure PaaS
+
+Let's look at some of the key networking features of Azure PaaS services; pros and cons, current feature gaps and tricky integration points.
 
 ### App Service Plan
 
@@ -34,12 +54,39 @@ By the time HTTP traffic arrives at the entry point of your application it as al
 1. Private endpoints require split-horizon DNS: reconstruction of public DNS records in a private zone for connections to work. 
 1. In App Services, a web app with a private endpoint configured is still accessible via its public IP (it responds with 403).
 
+<!--
 ## You will need
 
 1. Your own DNS Server and management processes
 1. To place as much trust in Azure SDN as you do when you trust our public network infrastructure
+-->
+
+## Getting started
+
+To understand how features work and how services work together I have created a couple of resources to get your started. You can run these scripts in your own Azure Subscription so that you can make your own observations.
+
+You will need:
+
+* Azure Subscription
+* AZ CLI installed
+* PowerShell Core installed
+
+```powershell
+# Deploy an App Service with VNet Integration, 
+# VNetRouteAll enabled, an NSG and a Test App for 
+# testing routing behaviour
+./deploy-vnet-route-all.ps1
+```
+
+The test app can be configured via App Settings to make various network connections. See [DanielLarsenNZ/HelloAspDotNetCore](https://github.com/DanielLarsenNZ/HelloAspDotNetCore).
 
 ## Links and references
+
+<sup>1</sup> <!-- TODO LINK -->
+
+<sup>2</sup> The Waterview Tunnel project was New Zealand's largest Infrastructure project to be completed. It took about 10 years and cost around 1.4 Billion New Zealand dollars. <!-- TODO LINK -->
+
+<sup>3</sup> Any traffic between data centres, within Microsoft Azure or between Microsoft services such as Virtual Machines, Microsoft 365, XBox, SQL DBs, Storage, and virtual networks are routed within our global network and never over the public Internet. See [Microsoft global network](https://docs.microsoft.com/en-us/azure/networking/microsoft-global-network#:~:text=any%20traffic%20between%20data%20centers%2C%20within%20Microsoft%20Azure%20or%20between%20Microsoft%20services%20such%20as%20Virtual%20Machines%2C%20Microsoft%20365%2C%20XBox%2C%20SQL%20DBs%2C%20Storage%2C%20and%20virtual%20networks%20are%20routed%20within%20our%20global%20network%20and%20never%20over%20the%20public%20Internet).
 
 > <http://helloprivate-aue.australiaeast.cloudapp.azure.com/>
 
@@ -57,3 +104,6 @@ By the time HTTP traffic arrives at the entry point of your application it as al
 * <https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-service-endpoints-overview>
 * <https://docs.microsoft.com/en-us/azure/service-bus-messaging/network-security#private-endpoints>
 * <https://docs.microsoft.com/en-us/azure/api-management/api-management-using-with-vnet>
+
+<!-- link refs -->
+[FastTrack for Azure Live]:https://aka.ms/ftalive
