@@ -322,6 +322,13 @@ Write the output of any command to a File
 Get-Process | Out-File -Path ./processes.txt
 ```
 
+Silently remove any folder named 'obj' or 'bin'
+
+```powershell
+Remove-Item **/obj -Recurse -Force
+Remove-Item **/bin -Recurse -Force
+```
+
 ## .NET interop
 
 Wrap a call to a .NET object in a `try` `catch` block to force Exceptions to terminate
