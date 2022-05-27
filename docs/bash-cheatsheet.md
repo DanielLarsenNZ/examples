@@ -11,7 +11,11 @@ chmod +x ./myscript.sh
 
 ### Set Error Preference
 
+But the hash bang on very first line to declare this file as a bash shell script.
+
 ```bash 
+#!/bin/bash
+
 # Exit on error
 set -e
 ```
@@ -98,4 +102,13 @@ echo -e "\033[33mCUSTOM_DOMAIN_NAME environment variable is not set\033[0m"
 # Get the primaryEndpoints.web property from the response and set it to a variable
 
 spaUrl=$( az storage account show -n $storage --query 'primaryEndpoints.web' -o tsv )
+```
+### Delete all Resource Groups that start with msdocs
+
+```bash
+for group in $( az group list --query "[?starts_with(name, 'msdocs' )].name" -o tsv )
+do
+    echo "Deleting $group ..."
+    az group delete -n $group -y --no-wait
+done
 ```
