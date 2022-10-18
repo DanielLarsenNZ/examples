@@ -87,6 +87,22 @@ then
 fi
 ```
 
+## Test if file exists
+
+```bash
+if [-e "$file"]
+  then
+    # ...
+fi
+```
+
+## Push and Pop directory
+
+```bash
+pushd samples/another-sample
+popd
+```
+
 ## Echo a warning
 
 This does not write to stderr. There is no Warning out. It just prints the text in Yellow.
