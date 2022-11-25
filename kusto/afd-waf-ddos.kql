@@ -1,4 +1,4 @@
-let span = 2h;
+let span = 1h;
 let bin_size = 1m;
 let WWW = AzureDiagnostics
 | where ResourceProvider == "MICROSOFT.CDN" and Category == "FrontDoorAccessLog" and TimeGenerated > now(-span);
