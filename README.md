@@ -1,14 +1,18 @@
 # Examples
 
-Quick examples for Azure, PowerShell and .NET.
+Quick examples for Azure, PowerShell, az CLI and more. The folder structure has been reorganised to be more self-explanatory. Examples include:
 
 ## docs
 
 * [powershell-cheatsheet.md](./docs/powershell-cheatsheet.md) - A PowerShell cheatsheet.
-* [Fun with Functions Proxies](./docs/fun-with-functions-proxies.md)
 * [Fun with App Settings in a WebJobs Host on .NET Core](./docs/fun-with-appsettings.md)
+* [App-init, Health-check, Auto-heal... oh my!](./docs/app-init-health-check-oh-my.md)
+* [Notes on Azure Front Door WAF](./docs/azure-front-door-waf.md)
+* [Azure Private endpoint trouble-shooter](./docs/pep-troubleshooter.md)
 
-## Solutions
+## azure-cli
+
+Examples for Azure CLI (az), including:
 
 * [nginx-lb-appservices](./nginx-lb-appservices) - Load balance two (or more) **App Services** with **nginx**
   running in a **Linux App Service** container
@@ -19,7 +23,9 @@ Quick examples for Azure, PowerShell and .NET.
 * [appservice-config](./appservice-config) - Loading **Azure Key vault** secrets into an **App Service** at
   Startup using a **Managed Identity**. Also **Health checks**.
 
-## Scripts
+## powershell
+
+Examples for PowerShell, including:
 
 * [CreateServicePrincipalSecret.ps1](/Scripts/Azure/CreateServicePrincipalSecret.ps1) -
   Create a secret for an Azure Active Directory (AAD) Service Principal.
@@ -31,7 +37,7 @@ Quick examples for Azure, PowerShell and .NET.
   settings and save as a new file.
 * [deploy-config-apim.ps1](Scripts\Azure\deploy-config-apim.ps1) - Deploy Azure API Management
 
-## Talks
+## talks
 
 > Talks have moved to <https://github.com/DanielLarsenNZ/talks>
 
