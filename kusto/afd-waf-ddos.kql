@@ -39,7 +39,7 @@ WWW
   DRS_Logged=dcountif(TrackingReference, DRS_Logged),
   Custom_Blocked=dcountif(TrackingReference, Custom_Blocked)
   on TimeGenerated in range(ago(span), now(), bin_size) 
-// Expand into an array that timeshart understands
+// Expand into an array that timechart understands
 | mvexpand TimeGenerated, Requests, Cached, RateLimited,  Logged, Blocked, BotBlocked, BotLogged, DRS_Blocked, DRS_Logged, Custom_Blocked
 // Project back into the correct types for charting
 | project todatetime(TimeGenerated), toint(Requests), toint(Cached), toint(RateLimited), toint(Logged), toint(Blocked), toint(BotBlocked), toint(BotLogged), toint(DRS_Blocked), toint(DRS_Logged), toint(Custom_Blocked)

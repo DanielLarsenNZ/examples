@@ -1,6 +1,6 @@
 # Examples
 
-Quick examples for Azure, PowerShell, az CLI and more. The folder structure has been reorganised to be more self-explanatory. Examples include:
+Quick examples for Azure, PowerShell, az CLI, C# and more. The folder structure has been reorganised to be more self-explanatory. Examples include:
 
 ## docs
 
