@@ -1,14 +1,21 @@
+// Timespan 1 hour
 let span = 1h;
+// in 1m bins
 let bin_size = 1m;
+// Pre-select all WWW (access log) records for the time period as a view
 let WWW = AzureDiagnostics
 | where ResourceProvider == "MICROSOFT.CDN" and Category == "FrontDoorAccessLog" and TimeGenerated > now(-span);
+// Pre-select all WAF log records for the time period as a view
 let WAF = AzureDiagnostics
 | where ResourceProvider == "MICROSOFT.CDN" and Category == "FrontDoorWebApplicationFirewallLog" and TimeGenerated > now(-span);
+// Left-outer join the views on tracking reference.
 WWW
 | join kind=leftouter WAF on $left.trackingReference_s == $right.trackingReference_s 
+// Calculate extended fields for Logged and Blocked
 | extend 
   logged_b=action_s1 =~ 'Log' or action_s1 =~ 'logandscore',
   blocked_b=action_s1 =~ 'Block'
+// Project fields and calculated fields for the chart series
 | project TrackingReference=trackingReference_s, TimeGenerated, RuleSet=ruleName_s1, HttpStatus=httpStatusCode_s, Action=action_s1, PolicyMode=policyMode_s1, Country=clientCountry_s, POP=pop_s, CacheStatus=cacheStatus_s,
   RateLimited=httpStatusCode_s == '429' and blocked_b, 
   Blocked=blocked_b,
@@ -19,6 +26,7 @@ WWW
   DRS_Blocked=ruleName_s1 startswith "Microsoft_DefaultRuleSet" and blocked_b,
   DRS_Logged=ruleName_s1 startswith "Microsoft_DefaultRuleSet" and logged_b,
   Custom_Blocked=ruleName_s1 !startswith "Microsoft_DefaultRuleSet" and ruleName_s1 !startswith "Microsoft_BotManagerRuleSet" and blocked_b
+// Make a binned chart series for the timespan range. Count unique requests
 | make-series 
   Requests=dcount(TrackingReference),
   Cached=dcountif(TrackingReference, Cached),
@@ -31,6 +39,8 @@ WWW
   DRS_Logged=dcountif(TrackingReference, DRS_Logged),
   Custom_Blocked=dcountif(TrackingReference, Custom_Blocked)
   on TimeGenerated in range(ago(span), now(), bin_size) 
+// Expand into an array that timeshart understands
 | mvexpand TimeGenerated, Requests, Cached, RateLimited,  Logged, Blocked, BotBlocked, BotLogged, DRS_Blocked, DRS_Logged, Custom_Blocked
+// Project back into the correct types for charting
 | project todatetime(TimeGenerated), toint(Requests), toint(Cached), toint(RateLimited), toint(Logged), toint(Blocked), toint(BotBlocked), toint(BotLogged), toint(DRS_Blocked), toint(DRS_Logged), toint(Custom_Blocked)
 | render timechart
