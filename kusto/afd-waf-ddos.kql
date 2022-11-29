@@ -1,3 +1,5 @@
+// DDoS attack analysis for Azure Front Door Premium, with DRS and Bot Protection enabled in Protection mode.
+
 // Timespan 1 hour
 let span = 1h;
 // in 1m bins
