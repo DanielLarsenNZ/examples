@@ -14,7 +14,7 @@ Notes on Azure Front Door (AFD) WAF (Web Application Firewall).
   * Add rule exclusions and other mitigations.
   * Repeat this whole process, checking the logs regularly, until you're satisfied that no legitimate traffic is being blocked. 
 * Finally, enable the WAF in Prevention mode.
-* Konitoring the logs to identify any other false-positive detections. Regularly reviewing the logs will also help you to identify any real attack attempts that have been blocked.
+* Monitoring the logs to identify any other false-positive detections. Regularly reviewing the logs will also help you to identify any real attack attempts that have been blocked.
 
 ## Monitoring
 
