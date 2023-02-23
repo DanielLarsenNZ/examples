@@ -10,7 +10,7 @@ In the words of the great @cbellee...
     1. Private Endpoint
     2. Private DNS zone
     3. DNS Zone Group
-    4. Private DNS Zone Link
+    4. VNet Link
 
 The private endpoint will also create a NIC.
 
@@ -18,7 +18,7 @@ The private endpoint will also create a NIC.
 
 ### App Service can't resolve the DNS name of the service. 
 
-The Private DNZ Zone _Group_ is essential for the automatic creation of A records for the private addresses of the NICs associated with the private links. The private DNS zone also needs to be VNet linked for this to work.
+The Private DNS Zone _Group_ is essential for the automatic creation of A records for the private addresses of the NICs associated with the private links. The private DNS zone also needs to be VNet linked for this to work.
 
 ### Linux Function App won't boot - Application Error (503)
 
@@ -69,8 +69,10 @@ curl        # Send an HTTP request
 
 ## Helpful guides
 
-This is the best sample I have seen so far: [Create Function App and private endpoint-secured Storage](https://github.com/Azure/azure-quickstart-templates/blob/master/quickstarts/microsoft.web/function-app-storage-private-endpoints/main.bicep).
+Tested and working Azure Sample (includes Azure Redis Cache, Storage and Key Vault): https://github.com/Azure-Samples/highly-available-zone-redundant-webapp
+
+Another good sample: [Create Function App and private endpoint-secured Storage](https://github.com/Azure/azure-quickstart-templates/blob/master/quickstarts/microsoft.web/function-app-storage-private-endpoints/main.bicep).
 
 Virtual Network (VNet) Integration has several routes to be configured. See [Integrate your app with an Azure virtual network - Routes](https://docs.microsoft.com/en-us/azure/app-service/overview-vnet-integration#routes) for more information.
 
-A really helpful guide for deploying Azure Functions with bicep. See [Automate resource deployment for your function app in Azure Functions](https://docs.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code?tabs=bicep) for more information.
+Ddeploying Azure Functions with bicep: [Automate resource deployment for your function app in Azure Functions](https://docs.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code?tabs=bicep).
